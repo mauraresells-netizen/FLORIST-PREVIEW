@@ -111,10 +111,12 @@ body.is-locked{ overflow:hidden; height:100vh; }
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   text-align:center; color:var(--cream);
   /* >>> SPLASH IMAGE SWAP POINT — drop the supplied photo here <<<
-     Placeholder is a niche violet gradient; the real image follows. */
+     The gradients are translucent overlays (for text legibility) so the
+     photo shows through. If no photo is supplied, they read as a violet
+     placeholder on their own. */
   background:
-    radial-gradient(120% 120% at 50% 0%, rgba(21,19,43,.20), rgba(21,19,43,.78)),
-    linear-gradient(160deg, #3a2f72 0%, #2a2350 45%, #15132b 100%),
+    radial-gradient(120% 120% at 50% 0%, rgba(21,19,43,.15), rgba(21,19,43,.55)),
+    linear-gradient(160deg, rgba(58,47,114,.40) 0%, rgba(42,35,80,.30) 45%, rgba(21,19,43,.55) 100%),
     url("splash.jpg");
   background-size:cover; background-position:center;
   transition:clip-path 1.25s var(--ease-soft), opacity 1s ease .15s;
@@ -604,6 +606,9 @@ form{ display:grid; gap:1.7rem; }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{ animation:none !important; transition:none !important; }
   .reveal,[data-stagger]>*,.lines .word>span,.about-img{ opacity:1 !important; transform:none !important; clip-path:none !important; }
+  /* Splash content also animates in — make sure it stays visible when motion is reduced */
+  .splash-eyebrow,.splash-name,.splash-desc,.splash-cta,.lines .word>span{ opacity:1 !important; transform:none !important; }
+  #nav{ opacity:1 !important; transform:none !important; }
 }
 </style>
 </head>
