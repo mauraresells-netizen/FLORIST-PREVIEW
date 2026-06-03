@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bluebell &amp; Briar — Glasgow Florist | West End Flowers &amp; Bouquets</title>
+<meta name="description" content="Bluebell & Briar is an independent florist in Glasgow's West End. Seasonal hand-tied bouquets, weddings, sympathy flowers and weekly subscriptions, delivered across the city." />
+
+<!-- ============================================================
+     GOOGLE FONTS
+     Fraunces  — characterful, soft optical serif (display)
+     Jost      — clean geometric sans (body / UI)
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+/* ============================================================
+   DESIGN TOKENS  — every colour, font, space & timing value
+   Palette derived from the supplied blue-phlox splash image:
+   midnight violet, blooming violet, periwinkle, sage stem,
+   warm cream and a misty lilac.
+   ============================================================ */
+:root{
+  /* — Colour — */
+  --ink:        #15132b;   /* near-black midnight violet (text / dark sections) */
+  --ink-soft:   #2a2747;   /* softer ink for secondary dark */
+  --bloom:      #4b3f8f;   /* deep blooming violet (primary) */
+  --bloom-deep: #362c6b;   /* deeper violet */
+  --peri:       #8c8ce4;   /* periwinkle (light accent) */
+  --peri-soft:  #b9b9ee;   /* soft periwinkle */
+  --stem:       #6f7e54;   /* sage botanical green (secondary accent) */
+  --stem-deep:  #525d3d;   /* deep stem green */
+  --gold:       #c9a86a;   /* muted antique gold (fine detail) */
+  --cream:      #f7f4ec;   /* warm paper white */
+  --cream-2:    #efeadd;   /* slightly deeper cream */
+  --mist:       #e8e5f4;   /* misty lilac (light section bg) */
+  --line:       rgba(21,19,43,.12); /* hairline */
+
+  /* — Type — */
+  --serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --sans:  "Jost", "Helvetica Neue", Arial, sans-serif;
+
+  /* — Spacing scale — */
+  --s-1: .5rem;  --s-2: 1rem;   --s-3: 1.5rem;  --s-4: 2rem;
+  --s-5: 3rem;   --s-6: 4.5rem; --s-7: 7rem;    --s-8: 10rem;
+
+  /* — Layout — */
+  --maxw: 1240px;
+  --gutter: clamp(1.25rem, 5vw, 4rem);
+  --radius: 4px;
+
+  /* — Motion — */
+  --ease-soft:  cubic-bezier(0.22, 1, 0.36, 1);   /* reveals */
+  --ease-hover: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* transforms */
+  --t-colour: .3s ease;
+  --t-move:   .45s var(--ease-hover);
+  --t-reveal: .85s var(--ease-soft);
+}
+
+/* ============================================================
+   RESET / BASE
+   ============================================================ */
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+body{
+  font-family:var(--sans);
+  font-weight:300;
+  color:var(--ink);
+  background:var(--cream);
+  line-height:1.7;
+  letter-spacing:.01em;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+img{ max-width:100%; display:block; }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+ul{ list-style:none; }
+h1,h2,h3,h4{ font-family:var(--serif); font-weight:400; line-height:1.08; }
+
+/* When the main site is locked behind the splash */
+body.is-locked{ overflow:hidden; height:100vh; }
+
+/* The main site is inert until the splash transition completes */
+#site{
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity 1s ease;
+  opacity:0;
+}
+#site.revealed{ visibility:visible; pointer-events:auto; opacity:1; }
+
+/* ============================================================
+   GRAIN OVERLAY  — permanent tactile SVG noise over everything
+   ============================================================ */
+.grain{
+  position:fixed; inset:0; z-index:9000; pointer-events:none;
+  opacity:.035; mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ============================================================
+   SECTION 1 — SPLASH / ENTRY PAGE
+   Full-screen image, sits above everything until the user enters.
+   ============================================================ */
+#splash{
+  position:fixed; inset:0; z-index:9999; overflow:hidden;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; color:var(--cream);
+  /* >>> SPLASH IMAGE SWAP POINT — drop the supplied photo here <<<
+     Placeholder is a niche violet gradient; the real image follows. */
+  background:
+    radial-gradient(120% 120% at 50% 0%, rgba(21,19,43,.20), rgba(21,19,43,.78)),
+    linear-gradient(160deg, #3a2f72 0%, #2a2350 45%, #15132b 100%),
+    url("splash.jpg");
+  background-size:cover; background-position:center;
+  transition:clip-path 1.25s var(--ease-soft), opacity 1s ease .15s;
+  clip-path:inset(0 0 0 0);
+}
+/* Cinematic exit — a centre-out iris/curtain wipe */
+#splash.exit{
+  clip-path:inset(0 50% 0 50%);
+  opacity:0;
+}
+/* Dark vignette for legibility */
+#splash::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(80% 70% at 50% 45%, transparent 30%, rgba(10,9,24,.55) 100%);
+}
+.splash-inner{ position:relative; z-index:2; padding:0 var(--gutter); }
+.splash-eyebrow{
+  font-family:var(--sans); font-weight:400; letter-spacing:.5em;
+  text-transform:uppercase; font-size:.72rem; color:var(--peri-soft);
+  opacity:0; transform:translateY(14px);
+  animation:splashUp 1.2s var(--ease-soft) .3s forwards;
+}
+.splash-name{
+  font-size:clamp(3rem, 11vw, 8.5rem); font-weight:300;
+  letter-spacing:.02em; margin:.2em 0 .25em; line-height:.98;
+  text-shadow:0 6px 40px rgba(0,0,0,.45);
+  opacity:0; transform:translateY(26px);
+  animation:splashUp 1.5s var(--ease-soft) .5s forwards;
+}
+.splash-name em{ font-style:italic; color:var(--peri-soft); font-weight:300; }
+.splash-desc{
+  font-family:var(--sans); font-weight:300; letter-spacing:.22em;
+  text-transform:uppercase; font-size:clamp(.7rem,1.6vw,.92rem);
+  color:var(--cream);
+  opacity:0; transform:translateY(18px);
+  animation:splashUp 1.4s var(--ease-soft) .95s forwards;
+}
+.splash-cta{
+  margin-top:clamp(2rem,5vh,3.4rem);
+  display:inline-flex; align-items:center; gap:.8em;
+  padding:1.05em 2.6em; border:1px solid rgba(247,244,236,.55);
+  color:var(--cream); font-family:var(--sans); font-weight:400;
+  letter-spacing:.32em; text-transform:uppercase; font-size:.74rem;
+  border-radius:2px; position:relative; overflow:hidden;
+  background:rgba(21,19,43,.18); backdrop-filter:blur(2px);
+  opacity:0; transform:translateY(18px);
+  animation:splashUp 1.3s var(--ease-soft) 1.35s forwards, breathe 3.4s ease-in-out 2.6s infinite;
+  transition:color .4s ease, border-color .4s ease, letter-spacing .4s ease;
+}
+.splash-cta:hover{ color:var(--ink); border-color:var(--cream); letter-spacing:.38em; }
+.splash-cta::before{
+  content:""; position:absolute; inset:0; z-index:-1; background:var(--cream);
+  transform:scaleX(0); transform-origin:left; transition:transform .5s var(--ease-hover);
+}
+.splash-cta:hover::before{ transform:scaleX(1); }
+.splash-cta svg{ width:14px; height:14px; transition:transform .4s ease; }
+.splash-cta:hover svg{ transform:translateX(4px); }
+@keyframes splashUp{ to{ opacity:1; transform:translateY(0); } }
+@keyframes breathe{
+  0%,100%{ box-shadow:0 0 0 0 rgba(200,168,106,0); }
+  50%{ box-shadow:0 0 38px 2px rgba(201,168,106,.32); }
+}
+
+/* ============================================================
+   SECTION 2 — NAVIGATION
+   Fixed, inert during splash, fades in after reveal.
+   ============================================================ */
+#nav{
+  position:fixed; top:0; left:0; right:0; z-index:800;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1.5rem var(--gutter); transition:padding .4s ease, background .4s ease, box-shadow .4s ease, backdrop-filter .4s ease;
+  opacity:0; transform:translateY(-12px); pointer-events:none;
+}
+#site.revealed #nav{ opacity:1; transform:none; pointer-events:auto; transition:opacity 1s ease 1s, transform 1s ease 1s, background .4s ease, box-shadow .4s ease, padding .4s ease; }
+#nav.scrolled{
+  background:rgba(247,244,236,.82); backdrop-filter:blur(14px);
+  box-shadow:0 1px 0 var(--line); padding:1rem var(--gutter);
+}
+.nav-logo{
+  font-family:var(--serif); font-size:1.5rem; letter-spacing:.02em; color:var(--ink);
+  display:flex; align-items:baseline; gap:.45em;
+}
+.nav-logo em{ font-style:italic; color:var(--bloom); }
+.nav-logo .amp{ color:var(--stem); font-style:italic; }
+.nav-links{ display:flex; gap:2.2rem; align-items:center; }
+.nav-links a{
+  position:relative; font-size:.82rem; letter-spacing:.16em; text-transform:uppercase;
+  font-weight:400; color:var(--ink); padding:.3em 0; transition:color var(--t-colour);
+}
+.nav-links a::after{
+  content:""; position:absolute; left:0; right:0; bottom:-2px; height:1px;
+  background:var(--bloom); transform:scaleX(0); transform-origin:center;
+  transition:transform var(--t-move);
+}
+.nav-links a:hover{ color:var(--bloom); }
+.nav-links a:hover::after{ transform:scaleX(1); }
+.nav-cta{
+  padding:.7em 1.5em !important; border:1px solid var(--bloom); border-radius:2px;
+  color:var(--bloom) !important; transition:background var(--t-colour), color var(--t-colour) !important;
+}
+.nav-cta::after{ display:none; }
+.nav-cta:hover{ background:var(--bloom); color:var(--cream) !important; }
+
+/* Hamburger */
+.nav-burger{ display:none; flex-direction:column; gap:5px; width:30px; z-index:810; }
+.nav-burger span{ display:block; height:1.6px; width:100%; background:var(--ink); transition:transform .4s var(--ease-hover), opacity .3s ease; }
+.nav-burger.open span:nth-child(1){ transform:translateY(6.6px) rotate(45deg); }
+.nav-burger.open span:nth-child(2){ opacity:0; }
+.nav-burger.open span:nth-child(3){ transform:translateY(-6.6px) rotate(-45deg); }
+
+/* Mobile slide-in panel */
+.mobile-panel{
+  position:fixed; inset:0 0 0 auto; width:min(82vw,360px); z-index:805;
+  background:var(--ink); color:var(--cream);
+  display:flex; flex-direction:column; justify-content:center; gap:1.6rem;
+  padding:var(--gutter); transform:translateX(100%);
+  transition:transform .6s var(--ease-soft);
+}
+.mobile-panel.open{ transform:translateX(0); }
+.mobile-panel a{
+  font-family:var(--serif); font-size:1.9rem; color:var(--cream);
+  opacity:0; transform:translateX(24px); transition:transform .5s var(--ease-soft), opacity .5s ease;
+}
+.mobile-panel.open a{ opacity:1; transform:none; }
+.mobile-panel a:nth-child(1){ transition-delay:.12s; }
+.mobile-panel a:nth-child(2){ transition-delay:.18s; }
+.mobile-panel a:nth-child(3){ transition-delay:.24s; }
+.mobile-panel a:nth-child(4){ transition-delay:.30s; }
+.mobile-panel a:nth-child(5){ transition-delay:.36s; }
+.mobile-panel a:nth-child(6){ transition-delay:.42s; }
+.mobile-panel .mp-tag{ font-family:var(--sans); font-size:.7rem; letter-spacing:.3em; text-transform:uppercase; color:var(--peri); margin-bottom:.5rem; }
+
+/* ============================================================
+   SHARED — section headings, eyebrows, buttons
+   ============================================================ */
+.section{ padding:var(--s-7) 0; position:relative; }
+.wrap{ max-width:var(--maxw); margin:0 auto; padding:0 var(--gutter); }
+.eyebrow{
+  display:inline-flex; align-items:center; gap:1rem;
+  font-family:var(--sans); font-weight:400; letter-spacing:.36em; text-transform:uppercase;
+  font-size:.72rem; color:var(--bloom); margin-bottom:1.4rem;
+}
+.eyebrow::before,.eyebrow.center::after{ content:""; width:34px; height:1px; background:var(--gold); }
+.eyebrow.light{ color:var(--peri); }
+.section-title{
+  font-size:clamp(2.2rem,5vw,3.8rem); letter-spacing:.005em; max-width:18ch; margin-bottom:1.2rem;
+}
+.section-title em{ font-style:italic; color:var(--bloom); }
+.lead{ font-size:1.08rem; max-width:54ch; color:var(--ink-soft); }
+
+.btn{
+  display:inline-flex; align-items:center; gap:.7em; position:relative; overflow:hidden;
+  padding:1em 2.2em; font-family:var(--sans); font-weight:400; font-size:.78rem;
+  letter-spacing:.22em; text-transform:uppercase; border-radius:2px;
+  transition:transform var(--t-move), box-shadow var(--t-move), color var(--t-colour);
+}
+.btn-fill{ background:var(--bloom); color:var(--cream); }
+.btn-fill:hover{ transform:translateY(-3px); box-shadow:0 16px 34px -14px rgba(75,63,143,.7); }
+.btn-ghost{ border:1px solid var(--bloom); color:var(--bloom); }
+.btn-ghost:hover{ transform:translateY(-3px); background:var(--bloom); color:var(--cream); }
+/* ripple */
+.ripple{ position:absolute; border-radius:50%; transform:scale(0); background:rgba(255,255,255,.45); pointer-events:none; animation:ripple .65s var(--ease-hover); }
+.btn-ghost .ripple{ background:rgba(75,63,143,.22); }
+@keyframes ripple{ to{ transform:scale(2.6); opacity:0; } }
+
+/* ============================================================
+   SCROLL-REVEAL primitives (Intersection Observer)
+   ============================================================ */
+.reveal{ opacity:0; transform:translateY(30px); transition:opacity var(--t-reveal), transform var(--t-reveal); }
+.reveal.in{ opacity:1; transform:none; }
+[data-stagger] > *{ opacity:0; transform:translateY(30px); transition:opacity var(--t-reveal), transform var(--t-reveal); }
+[data-stagger].in > *{ opacity:1; transform:none; }
+
+/* Word-by-word headline reveal */
+.lines .word{ display:inline-block; overflow:hidden; vertical-align:top; }
+.lines .word > span{ display:inline-block; transform:translateY(105%); transition:transform .75s var(--ease-soft); }
+.lines.in .word > span{ transform:translateY(0); }
+
+/* ============================================================
+   SECTION 3 — HERO
+   ============================================================ */
+#hero{
+  min-height:100vh; display:flex; align-items:center; position:relative; overflow:hidden;
+  padding-top:7rem;
+  background:
+    radial-gradient(70% 80% at 85% 10%, rgba(140,140,228,.18), transparent 60%),
+    radial-gradient(60% 70% at 5% 90%, rgba(111,126,84,.16), transparent 60%),
+    var(--cream);
+}
+/* drifting decorative blooms */
+.drift{ position:absolute; border-radius:50%; filter:blur(40px); opacity:.5; pointer-events:none; will-change:transform; }
+.drift.d1{ width:420px; height:420px; top:-80px; right:-60px; background:radial-gradient(circle,var(--peri),transparent 70%); animation:drift 22s ease-in-out infinite alternate; }
+.drift.d2{ width:340px; height:340px; bottom:-90px; left:-70px; background:radial-gradient(circle,var(--stem),transparent 70%); animation:drift 26s ease-in-out infinite alternate-reverse; }
+.drift.d3{ width:240px; height:240px; top:40%; left:55%; background:radial-gradient(circle,var(--bloom),transparent 70%); opacity:.25; animation:drift 30s ease-in-out infinite alternate; }
+@keyframes drift{ 0%{ transform:translate(0,0) scale(1); } 100%{ transform:translate(40px,-46px) scale(1.12); } }
+
+.hero-grid{ display:grid; grid-template-columns:1.15fr .85fr; gap:var(--s-6); align-items:center; position:relative; z-index:2; width:100%; }
+.hero-copy h1{ font-size:clamp(2.8rem,7vw,6rem); font-weight:300; letter-spacing:.005em; margin-bottom:1.6rem; }
+.hero-copy h1 em{ font-style:italic; color:var(--bloom); }
+.hero-tag{ font-size:1.12rem; color:var(--ink-soft); max-width:42ch; margin-bottom:2.4rem; }
+.hero-tag strong{ font-weight:500; color:var(--stem-deep); }
+.hero-btns{ display:flex; gap:1rem; flex-wrap:wrap; }
+.hero-meta{ margin-top:3rem; display:flex; gap:2.4rem; flex-wrap:wrap; font-size:.82rem; letter-spacing:.04em; color:var(--ink-soft); }
+.hero-meta b{ display:block; font-family:var(--serif); font-size:1.5rem; color:var(--bloom); font-weight:400; }
+
+/* hero visual — framed photo + floating card */
+.hero-visual{ position:relative; }
+.hero-photo{
+  aspect-ratio:3/4; border-radius:4px; position:relative; overflow:hidden;
+  box-shadow:0 40px 80px -40px rgba(21,19,43,.5);
+  /* >>> HERO IMAGE SWAP POINT <<< (botanical close-up) */
+  background:
+    linear-gradient(160deg, rgba(75,63,143,.15), rgba(21,19,43,.35)),
+    url("splash.jpg");
+  background-size:cover; background-position:center;
+}
+.hero-photo::after{ content:""; position:absolute; inset:14px; border:1px solid rgba(247,244,236,.5); pointer-events:none; }
+.hero-float{
+  position:absolute; bottom:-26px; left:-26px; background:var(--cream); padding:1.3rem 1.6rem;
+  border-radius:4px; box-shadow:0 24px 50px -22px rgba(21,19,43,.4); max-width:230px;
+  border-left:2px solid var(--stem);
+}
+.hero-float .hf-k{ font-family:var(--serif); font-style:italic; font-size:1.2rem; color:var(--bloom); }
+.hero-float .hf-s{ font-size:.78rem; color:var(--ink-soft); margin-top:.2rem; }
+.scroll-hint{ position:absolute; bottom:1.6rem; left:50%; transform:translateX(-50%); font-size:.66rem; letter-spacing:.34em; text-transform:uppercase; color:var(--ink-soft); display:flex; flex-direction:column; align-items:center; gap:.7rem; z-index:3; }
+.scroll-hint span{ width:1px; height:38px; background:linear-gradient(var(--bloom),transparent); animation:scrollPulse 2.2s ease-in-out infinite; }
+@keyframes scrollPulse{ 0%,100%{ transform:scaleY(.4); opacity:.4; transform-origin:top; } 50%{ transform:scaleY(1); opacity:1; transform-origin:top; } }
+
+/* ============================================================
+   SECTION 4 — COLLECTIONS (core offering grid)
+   ============================================================ */
+#collections{ background:var(--cream); }
+.head-center{ text-align:center; max-width:60ch; margin:0 auto var(--s-6); }
+.head-center .eyebrow{ justify-content:center; }
+.head-center .section-title{ margin-left:auto; margin-right:auto; max-width:22ch; }
+.head-center .lead{ margin:0 auto; }
+
+.card-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.6rem; }
+.card{
+  background:var(--cream-2); border-radius:4px; padding:2.2rem 2rem 2rem; position:relative;
+  border-top:2px solid transparent; overflow:hidden;
+  transition:transform var(--t-move), box-shadow var(--t-move), border-color var(--t-colour), background var(--t-colour);
+}
+.card::before{ /* botanical corner flourish */
+  content:""; position:absolute; top:-30px; right:-30px; width:90px; height:90px; border-radius:50%;
+  background:radial-gradient(circle,var(--peri-soft),transparent 70%); opacity:.4; transition:transform var(--t-move);
+}
+.card:hover{ transform:translateY(-6px); box-shadow:0 26px 50px -26px rgba(75,63,143,.4); border-top-color:var(--bloom); background:var(--cream); }
+.card:hover::before{ transform:scale(1.5); }
+.card .c-tag{ font-size:.68rem; letter-spacing:.26em; text-transform:uppercase; color:var(--stem); margin-bottom:.9rem; }
+.card h3{ font-size:1.65rem; color:var(--ink); margin-bottom:.6rem; }
+.card h3 em{ font-style:italic; color:var(--bloom); }
+.card p{ font-size:.94rem; color:var(--ink-soft); margin-bottom:1.4rem; }
+.card .price{ font-family:var(--serif); font-size:1.4rem; color:var(--bloom); display:flex; align-items:baseline; gap:.4rem; }
+.card .price small{ font-family:var(--sans); font-size:.72rem; letter-spacing:.1em; color:var(--ink-soft); text-transform:uppercase; }
+.card .c-line{ height:1px; background:var(--line); margin:1.3rem 0; }
+
+/* ============================================================
+   SECTION 5 — ABOUT / OUR STORY  + count-up stats
+   ============================================================ */
+#about{ background:var(--mist); }
+.about-grid{ display:grid; grid-template-columns:.9fr 1.1fr; gap:var(--s-6); align-items:center; }
+.about-img{
+  aspect-ratio:4/5; border-radius:4px; position:relative; overflow:hidden;
+  box-shadow:0 36px 70px -36px rgba(21,19,43,.45);
+  clip-path:inset(0 0 100% 0); transition:clip-path 1.1s var(--ease-soft);
+  /* >>> ABOUT IMAGE SWAP POINT <<< (florist at the bench) */
+  background:linear-gradient(150deg, rgba(75,63,143,.2), rgba(21,19,43,.3)), url("splash.jpg");
+  background-size:cover; background-position:center;
+}
+.about-img.in{ clip-path:inset(0 0 0 0); }
+.about-img::after{ content:""; position:absolute; inset:16px; border:1px solid rgba(247,244,236,.55); }
+.about-copy h2{ font-size:clamp(2rem,4.4vw,3.4rem); margin-bottom:1.4rem; }
+.about-copy h2 em{ font-style:italic; color:var(--bloom); }
+.about-copy p{ color:var(--ink-soft); margin-bottom:1.2rem; max-width:54ch; }
+.about-copy p .first{ font-family:var(--serif); font-size:1.05rem; color:var(--stem-deep); }
+.stats{ display:flex; gap:2.6rem; margin-top:2.4rem; flex-wrap:wrap; border-top:1px solid var(--line); padding-top:2rem; }
+.stat .num{ font-family:var(--serif); font-size:2.6rem; color:var(--bloom); font-weight:400; line-height:1; }
+.stat .lab{ font-size:.76rem; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); margin-top:.5rem; max-width:16ch; }
+
+/* ============================================================
+   SECTION 6 — SPOTLIGHT (full-width, parallax)
+   ============================================================ */
+#spotlight{ position:relative; min-height:78vh; display:flex; align-items:center; justify-content:center; overflow:hidden; text-align:center; color:var(--cream); }
+.spot-bg{
+  position:absolute; inset:-12% 0; z-index:0; will-change:transform;
+  /* >>> SPOTLIGHT IMAGE SWAP POINT <<< (signature bouquet hero shot) */
+  background:linear-gradient(rgba(21,19,43,.55),rgba(21,19,43,.7)), url("splash.jpg");
+  background-size:cover; background-position:center;
+}
+.spot-inner{ position:relative; z-index:2; padding:var(--s-6) var(--gutter); max-width:760px; }
+.spot-frame{ position:absolute; inset:clamp(1.4rem,4vw,3rem); border:1px solid rgba(201,168,106,.55); z-index:1; pointer-events:none; }
+.spot-inner .eyebrow{ justify-content:center; color:var(--peri); }
+.spot-inner h2{ font-size:clamp(2.4rem,6vw,4.6rem); font-weight:300; margin-bottom:1.2rem; text-shadow:0 6px 30px rgba(0,0,0,.4); }
+.spot-inner h2 em{ font-style:italic; color:var(--peri-soft); }
+.spot-inner .poetic{ font-family:var(--serif); font-style:italic; font-size:1.2rem; color:var(--cream); max-width:46ch; margin:0 auto 2.2rem; opacity:.92; }
+.btn-light{ border:1px solid rgba(247,244,236,.6); color:var(--cream); }
+.btn-light:hover{ background:var(--cream); color:var(--ink); transform:translateY(-3px); }
+
+/* ============================================================
+   SECTION 7 — OCCASIONS band
+   ============================================================ */
+#occasions{ background:var(--cream); }
+.occ-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:1rem; }
+.occ{
+  text-align:center; padding:2rem 1rem; border:1px solid var(--line); border-radius:4px;
+  transition:transform var(--t-move), background var(--t-colour), border-color var(--t-colour), color var(--t-colour);
+}
+.occ:hover{ transform:translateY(-6px); background:var(--bloom); border-color:var(--bloom); color:var(--cream); }
+.occ .ic{ width:46px; height:46px; margin:0 auto 1rem; color:var(--bloom); transition:color var(--t-colour); }
+.occ:hover .ic{ color:var(--peri-soft); }
+.occ h4{ font-size:1.2rem; margin-bottom:.3rem; }
+.occ p{ font-size:.78rem; color:var(--ink-soft); letter-spacing:.02em; transition:color var(--t-colour); }
+.occ:hover p{ color:var(--peri-soft); }
+
+/* ============================================================
+   SECTION 8 — GALLERY (editorial masonry)
+   ============================================================ */
+#gallery{ background:var(--mist); }
+.masonry{ display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:150px; gap:1rem; }
+.tile{
+  position:relative; overflow:hidden; border-radius:4px; background-size:cover; background-position:center;
+  /* >>> GALLERY IMAGE SWAP POINTS — replace each gradient with a photo <<< */
+}
+.tile::after{ content:""; position:absolute; inset:0; background:linear-gradient(transparent 40%, rgba(21,19,43,.5)); opacity:0; transition:opacity var(--t-colour); }
+.tile .view{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:2;
+  color:var(--cream); font-family:var(--serif); font-style:italic; font-size:1.3rem; letter-spacing:.05em;
+  opacity:0; transform:scale(.9); transition:opacity .4s ease, transform var(--t-move);
+}
+.tile-inner{ position:absolute; inset:0; background-size:cover; background-position:center; transition:transform .7s var(--ease-hover); }
+.tile:hover .tile-inner{ transform:scale(1.06); }
+.tile:hover::after{ opacity:1; }
+.tile:hover .view{ opacity:1; transform:scale(1); }
+.t1{ grid-column:span 2; grid-row:span 2; }
+.t2{ grid-column:span 1; grid-row:span 2; }
+.t3{ grid-column:span 1; grid-row:span 1; }
+.t4{ grid-column:span 1; grid-row:span 1; }
+.t5{ grid-column:span 2; grid-row:span 1; }
+.t6{ grid-column:span 1; grid-row:span 2; }
+.t7{ grid-column:span 1; grid-row:span 1; }
+.t8{ grid-column:span 2; grid-row:span 1; }
+/* tinted gradient placeholders, each distinct so the grid reads as real photos */
+.g-a{ background-image:linear-gradient(135deg,#5b4ea8,#2a2350); }
+.g-b{ background-image:linear-gradient(135deg,#6f7e54,#3a4a2a); }
+.g-c{ background-image:linear-gradient(135deg,#8c8ce4,#4b3f8f); }
+.g-d{ background-image:linear-gradient(135deg,#c9a86a,#7a5f33); }
+.g-e{ background-image:linear-gradient(135deg,#362c6b,#15132b); }
+.g-f{ background-image:linear-gradient(135deg,#b9b9ee,#6f7e54); }
+
+/* ============================================================
+   SECTION 9 — TESTIMONIALS (dark, carousel)
+   ============================================================ */
+#testimonials{ background:var(--ink); color:var(--cream); position:relative; overflow:hidden; }
+#testimonials .quote-mark{
+  position:absolute; top:-2rem; left:50%; transform:translateX(-50%);
+  font-family:var(--serif); font-size:26rem; line-height:1; color:var(--bloom); opacity:.16; pointer-events:none; user-select:none;
+}
+.tcarousel{ max-width:820px; margin:0 auto; text-align:center; position:relative; min-height:230px; }
+.tslide{
+  position:absolute; inset:0; opacity:0; transform:translateX(40px);
+  transition:opacity .8s ease, transform .8s var(--ease-soft); pointer-events:none;
+}
+.tslide.active{ opacity:1; transform:none; pointer-events:auto; position:relative; }
+.tslide .stars{ color:var(--gold); letter-spacing:.3em; margin-bottom:1.4rem; font-size:.9rem; }
+.tslide blockquote{ font-family:var(--serif); font-style:italic; font-size:clamp(1.3rem,2.6vw,1.9rem); line-height:1.5; color:var(--cream); margin-bottom:1.8rem; }
+.tslide .who{ font-family:var(--serif); font-size:1.15rem; color:var(--peri); }
+.tslide .where{ font-size:.74rem; letter-spacing:.2em; text-transform:uppercase; color:var(--peri-soft); margin-top:.3rem; }
+.tdots{ display:flex; gap:.7rem; justify-content:center; margin-top:2.6rem; }
+.tdot{ width:9px; height:9px; border-radius:50%; background:rgba(247,244,236,.25); transition:background var(--t-colour), transform var(--t-colour); }
+.tdot.active{ background:var(--gold); transform:scale(1.3); }
+
+/* ============================================================
+   SECTION 10 — ENQUIRY / CONTACT (floating-label form)
+   ============================================================ */
+#enquire{ background:var(--cream); }
+.enq-grid{ display:grid; grid-template-columns:1fr 1.15fr; gap:var(--s-6); align-items:start; }
+.enq-copy h2{ font-size:clamp(2rem,4.4vw,3.4rem); margin-bottom:1.2rem; }
+.enq-copy h2 em{ font-style:italic; color:var(--bloom); }
+.enq-copy .italic{ font-family:var(--serif); font-style:italic; font-size:1.2rem; color:var(--stem-deep); margin-bottom:2rem; }
+.enq-detail{ margin-top:2rem; display:grid; gap:1.2rem; }
+.enq-detail .row{ display:flex; gap:1rem; align-items:flex-start; }
+.enq-detail .ic{ width:22px; height:22px; color:var(--bloom); flex:none; margin-top:.2rem; }
+.enq-detail .k{ font-size:.7rem; letter-spacing:.22em; text-transform:uppercase; color:var(--stem); }
+.enq-detail .v{ color:var(--ink); }
+
+form{ display:grid; gap:1.7rem; }
+.f-row{ display:grid; grid-template-columns:1fr 1fr; gap:1.4rem; }
+.field{ position:relative; }
+.field input,.field select,.field textarea{
+  width:100%; background:transparent; border:none; border-bottom:1px solid var(--line);
+  padding:.9rem 0 .6rem; font-family:var(--sans); font-size:1rem; color:var(--ink); font-weight:300;
+}
+.field textarea{ resize:vertical; min-height:90px; }
+.field select{ cursor:pointer; }
+.field label{
+  position:absolute; left:0; top:.9rem; color:var(--ink-soft); font-size:1rem; pointer-events:none;
+  transition:transform .35s var(--ease-hover), color .35s ease, font-size .35s ease;
+}
+.field input:focus,.field select:focus,.field textarea:focus{ outline:none; }
+.field input:focus + label,.field input.filled + label,
+.field select:focus + label,.field select.filled + label,
+.field textarea:focus + label,.field textarea.filled + label{
+  transform:translateY(-1.45rem); font-size:.68rem; letter-spacing:.16em; text-transform:uppercase; color:var(--bloom);
+}
+.field .underline{ position:absolute; left:0; bottom:0; height:1.5px; width:100%; background:var(--bloom); transform:scaleX(0); transform-origin:left; transition:transform .4s var(--ease-hover); }
+.field input:focus ~ .underline,.field select:focus ~ .underline,.field textarea:focus ~ .underline{ transform:scaleX(1); }
+.form-note{ font-size:.8rem; color:var(--ink-soft); }
+.form-success{ display:none; padding:1rem 1.2rem; background:var(--mist); border-left:2px solid var(--stem); color:var(--stem-deep); font-size:.92rem; border-radius:3px; }
+.form-success.show{ display:block; }
+
+/* ============================================================
+   SECTION 11 — FIND US (styled map + pin)
+   ============================================================ */
+#find{ background:var(--mist); }
+.find-grid{ display:grid; grid-template-columns:1fr 1fr; gap:0; border-radius:6px; overflow:hidden; box-shadow:0 30px 60px -34px rgba(21,19,43,.4); }
+.find-info{ background:var(--ink); color:var(--cream); padding:clamp(2rem,5vw,3.6rem); }
+.find-info .eyebrow{ color:var(--peri); }
+.find-info h2{ font-size:clamp(1.8rem,3.6vw,2.8rem); margin-bottom:1.4rem; }
+.find-info h2 em{ font-style:italic; color:var(--peri-soft); }
+.find-info .line{ display:flex; gap:.9rem; margin-bottom:1.1rem; align-items:flex-start; font-size:.96rem; color:var(--peri-soft); }
+.find-info .line b{ color:var(--cream); font-weight:400; display:block; }
+.find-info .line .ic{ width:20px; height:20px; color:var(--gold); flex:none; margin-top:.2rem; }
+.find-map{
+  position:relative; min-height:380px;
+  background:
+    linear-gradient(rgba(75,63,143,.12),rgba(111,126,84,.12)),
+    repeating-linear-gradient(0deg,#e4e0f0 0 1px,transparent 1px 44px),
+    repeating-linear-gradient(90deg,#e4e0f0 0 1px,transparent 1px 44px),
+    #eeebf6;
+}
+.find-map .road{ position:absolute; background:#d8d3ea; }
+.find-map .road.r1{ top:38%; left:0; right:0; height:14px; transform:rotate(-3deg); }
+.find-map .road.r2{ top:0; bottom:0; left:46%; width:12px; transform:rotate(4deg); }
+.find-map .road.r3{ top:64%; left:0; right:0; height:9px; }
+.map-pin{ position:absolute; top:38%; left:46%; transform:translate(-50%,-100%); z-index:3; }
+.map-pin .dot{ width:30px; height:30px; background:var(--bloom); border-radius:50% 50% 50% 0; transform:rotate(-45deg); box-shadow:0 8px 20px -6px rgba(75,63,143,.7); display:flex; align-items:center; justify-content:center; }
+.map-pin .dot::after{ content:""; width:11px; height:11px; background:var(--cream); border-radius:50%; transform:rotate(45deg); }
+.map-pin .pulse{ position:absolute; top:8px; left:50%; transform:translateX(-50%); width:30px; height:30px; border-radius:50%; background:var(--bloom); opacity:.4; animation:pinPulse 2.4s ease-out infinite; }
+@keyframes pinPulse{ 0%{ transform:translateX(-50%) scale(.6); opacity:.5; } 100%{ transform:translateX(-50%) scale(2.6); opacity:0; } }
+.map-label{ position:absolute; bottom:1.2rem; left:1.2rem; background:var(--cream); padding:.6rem 1rem; border-radius:3px; font-size:.78rem; letter-spacing:.08em; box-shadow:0 10px 24px -12px rgba(21,19,43,.4); }
+.map-label b{ color:var(--bloom); }
+
+/* ============================================================
+   SECTION 12 — FOOTER
+   ============================================================ */
+#footer{ background:var(--bloom-deep); color:var(--cream); padding:var(--s-6) 0 2rem; border-top:2px solid var(--gold); text-align:center; }
+.foot-mark{ font-family:var(--serif); font-size:2.6rem; letter-spacing:.02em; margin-bottom:.5rem; }
+.foot-mark em{ font-style:italic; color:var(--peri); } .foot-mark .amp{ color:var(--gold); font-style:italic; }
+.foot-tag{ font-family:var(--serif); font-style:italic; color:var(--peri-soft); margin-bottom:1.8rem; }
+.foot-social{ display:flex; gap:1.6rem; justify-content:center; margin-bottom:2.6rem; }
+.foot-social a{ font-size:.78rem; letter-spacing:.18em; text-transform:uppercase; transition:letter-spacing var(--t-move), color var(--t-colour); color:var(--peri-soft); }
+.foot-social a:hover{ letter-spacing:.34em; color:var(--cream); }
+.foot-cols{ display:grid; grid-template-columns:repeat(3,1fr); gap:2rem; max-width:840px; margin:0 auto 2.6rem; text-align:left; border-top:1px solid rgba(247,244,236,.16); padding-top:2.4rem; }
+.foot-cols h5{ font-family:var(--sans); font-weight:500; font-size:.72rem; letter-spacing:.24em; text-transform:uppercase; color:var(--gold); margin-bottom:1rem; }
+.foot-cols li,.foot-cols a{ font-size:.9rem; color:var(--peri-soft); line-height:2; transition:color var(--t-colour); }
+.foot-cols a:hover{ color:var(--cream); }
+.copyright{ font-size:.68rem; letter-spacing:.28em; text-transform:uppercase; color:var(--peri-soft); border-top:1px solid rgba(247,244,236,.16); padding-top:1.8rem; max-width:840px; margin:0 auto; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:1024px){
+  .hero-grid{ grid-template-columns:1fr; gap:var(--s-5); }
+  .hero-visual{ max-width:420px; }
+  .card-grid{ grid-template-columns:repeat(2,1fr); }
+  .about-grid,.enq-grid,.find-grid{ grid-template-columns:1fr; }
+  .find-grid{ box-shadow:none; }
+  .find-map{ min-height:320px; }
+  .occ-grid{ grid-template-columns:repeat(3,1fr); }
+  .masonry{ grid-template-columns:repeat(3,1fr); }
+}
+@media (max-width:680px){
+  :root{ --s-7:4.5rem; }
+  .nav-links{ display:none; } .nav-burger{ display:flex; }
+  .card-grid{ grid-template-columns:1fr; }
+  .occ-grid{ grid-template-columns:repeat(2,1fr); }
+  .masonry{ grid-template-columns:repeat(2,1fr); grid-auto-rows:130px; }
+  .t1,.t5,.t8{ grid-column:span 2; }
+  .f-row{ grid-template-columns:1fr; }
+  .stats{ gap:1.6rem; }
+  .hero-float{ left:0; }
+  .foot-cols{ grid-template-columns:1fr; text-align:center; }
+}
+
+/* Respect reduced-motion */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{ animation:none !important; transition:none !important; }
+  .reveal,[data-stagger]>*,.lines .word>span,.about-img{ opacity:1 !important; transform:none !important; clip-path:none !important; }
+}
+</style>
+</head>
+<body class="is-locked">
+
+<!-- ============================================================
+     GRAIN OVERLAY
+     ============================================================ -->
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ============================================================
+     SECTION 1 — SPLASH / ENTRY
+     ============================================================ -->
+<div id="splash" role="dialog" aria-label="Welcome to Bluebell & Briar">
+  <div class="splash-inner">
+    <p class="splash-eyebrow">Glasgow&rsquo;s West End &middot; Est. 2012</p>
+    <h1 class="splash-name">Bluebell <em>&amp;</em> Briar</h1>
+    <p class="splash-desc">Independent Florist &amp; Flower Studio</p>
+    <button class="splash-cta" id="enterBtn">
+      Step Into the Studio
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ============================================================
+     MAIN SITE (rendered beneath splash, inert until reveal)
+     ============================================================ -->
+<div id="site">
+
+  <!-- ===== SECTION 2 — NAVIGATION ===== -->
+  <nav id="nav">
+    <a href="#hero" class="nav-logo">Bluebell <span class="amp">&amp;</span> <em>Briar</em></a>
+    <ul class="nav-links">
+      <li><a href="#collections">Collections</a></li>
+      <li><a href="#about">Our Story</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#testimonials">Loved By</a></li>
+      <li><a href="#enquire" class="nav-cta">Order Flowers</a></li>
+    </ul>
+    <button class="nav-burger" id="burger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile slide-in panel -->
+  <div class="mobile-panel" id="mobilePanel">
+    <p class="mp-tag">Bluebell &amp; Briar</p>
+    <a href="#collections">Collections</a>
+    <a href="#about">Our Story</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#testimonials">Loved By</a>
+    <a href="#find">Find Us</a>
+    <a href="#enquire">Order Flowers</a>
+  </div>
+
+  <!-- ===== SECTION 3 — HERO ===== -->
+  <header id="hero">
+    <div class="drift d1"></div><div class="drift d2"></div><div class="drift d3"></div>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Seasonal Stems, Hand-Tied in Glasgow</p>
+        <h1 class="lines" data-lines>
+          <span class="word"><span>Flowers</span></span>
+          <span class="word"><span>that</span></span>
+          <span class="word"><span><em>feel</em></span></span><br/>
+          <span class="word"><span>like</span></span>
+          <span class="word"><span>they</span></span>
+          <span class="word"><span>were</span></span><br/>
+          <span class="word"><span>grown</span></span>
+          <span class="word"><span>for</span></span>
+          <span class="word"><span><em>you.</em></span></span>
+        </h1>
+        <p class="hero-tag reveal">A small studio on Byres Road, arranging <strong>seasonal British blooms</strong> into hand-tied bouquets &mdash; delivered across Glasgow, six days a week.</p>
+        <div class="hero-btns reveal">
+          <a href="#collections" class="btn btn-fill">View the Collection</a>
+          <a href="#enquire" class="btn btn-ghost">Order a Bouquet</a>
+        </div>
+        <div class="hero-meta reveal">
+          <div><b>Daily</b>Fresh cuts from the market</div>
+          <div><b>6 Days</b>Glasgow delivery Mon&ndash;Sat</div>
+          <div><b>2012</b>On Byres Road since</div>
+        </div>
+      </div>
+      <div class="hero-visual reveal">
+        <div class="hero-photo"></div>
+        <div class="hero-float">
+          <div class="hf-k">&ldquo;The wee shop with the big windows.&rdquo;</div>
+          <div class="hf-s">&mdash; said by half of the West End</div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-hint">Scroll<span></span></div>
+  </header>
+
+  <!-- ===== SECTION 4 — COLLECTIONS ===== -->
+  <section id="collections" class="section">
+    <div class="wrap">
+      <div class="head-center reveal">
+        <p class="eyebrow center">&mdash; The Collection &mdash;</p>
+        <h2 class="section-title">Bouquets for every <em>chapter</em></h2>
+        <p class="lead">Everything is made fresh to order from whatever&rsquo;s loveliest at the flower market that morning. Prices are a guide &mdash; tell us your budget and we&rsquo;ll make it sing.</p>
+      </div>
+
+      <div class="card-grid" data-stagger>
+        <article class="card">
+          <p class="c-tag">Everyday Favourite</p>
+          <h3>The <em>Byres Road</em> Hand-Tie</h3>
+          <p>Our signature seasonal posy &mdash; soft, garden-gathered and never stiff. Wrapped in kraft and ribbon.</p>
+          <div class="c-line"></div>
+          <div class="price">£38 <small>/ from</small></div>
+        </article>
+        <article class="card">
+          <p class="c-tag">Show-Stopper</p>
+          <h3>The <em>Luxe</em> Bloom</h3>
+          <p>A generous, layered arrangement with focal blooms, foliage and a little drama. For when it really matters.</p>
+          <div class="c-line"></div>
+          <div class="price">£70 <small>/ from</small></div>
+        </article>
+        <article class="card">
+          <p class="c-tag">Through the Letterbox</p>
+          <h3>Letterbox <em>Flowers</em></h3>
+          <p>Posted flat, no one needs to be home. Arrives in bud and opens beautifully over a few days.</p>
+          <div class="c-line"></div>
+          <div class="price">£26 <small>/ delivered</small></div>
+        </article>
+        <article class="card">
+          <p class="c-tag">Everlasting</p>
+          <h3>Dried &amp; <em>Preserved</em></h3>
+          <p>Naturally dried grasses and blooms in our house palette &mdash; lasts months, no water needed.</p>
+          <div class="c-line"></div>
+          <div class="price">£34 <small>/ from</small></div>
+        </article>
+        <article class="card">
+          <p class="c-tag">Your Day</p>
+          <h3>Weddings &amp; <em>Events</em></h3>
+          <p>Bridal bouquets, buttonholes, arches and table flowers. Free consultation in the studio over tea.</p>
+          <div class="c-line"></div>
+          <div class="price">£450 <small>/ packages from</small></div>
+        </article>
+        <article class="card">
+          <p class="c-tag">A Little Ritual</p>
+          <h3>Weekly <em>Subscription</em></h3>
+          <p>Fresh flowers delivered every week or fortnight. Pause or cancel anytime &mdash; no fuss.</p>
+          <div class="c-line"></div>
+          <div class="price">£32 <small>/ per delivery</small></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 5 — ABOUT / OUR STORY ===== -->
+  <section id="about" class="section">
+    <div class="wrap about-grid">
+      <div class="about-img" data-aboutimg></div>
+      <div class="about-copy">
+        <p class="eyebrow">Our Story</p>
+        <h2>Grown close to home, <em>arranged with care</em></h2>
+        <p><span class="first">Bluebell &amp; Briar began in 2012</span>, in a narrow shop on Byres Road with good light and a leaky back door. Iona had spent years on the wholesale flower markets and wanted to do things differently &mdash; seasonal, a little wild, never the same bunch twice.</p>
+        <p>We work with Scottish growers wherever the season allows &mdash; ranunculus and sweet peas in spring, dahlias and cosmos through the late summer &mdash; topping up with the best of the Dutch market for the rest. Nothing is forced into a foam-block. Everything is hand-tied so it keeps growing the way it wants to.</p>
+        <p>Pop your head in, tell us who the flowers are for, and we&rsquo;ll make something just for them. That&rsquo;s always been the whole idea.</p>
+        <div class="stats" data-stats>
+          <div class="stat"><div class="num" data-count="2012" data-suffix="">0</div><div class="lab">Rooted on Byres Road since</div></div>
+          <div class="stat"><div class="num" data-count="14000" data-suffix="+">0</div><div class="lab">Bouquets tied &amp; delivered</div></div>
+          <div class="stat"><div class="num" data-count="320" data-suffix="+">0</div><div class="lab">Glasgow weddings dressed</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 6 — SPOTLIGHT ===== -->
+  <section id="spotlight">
+    <div class="spot-bg" data-parallax></div>
+    <div class="spot-frame"></div>
+    <div class="spot-inner reveal">
+      <p class="eyebrow center">&mdash; Bloom of the Season &mdash;</p>
+      <h2>The <em>Kelvingrove</em> Posy</h2>
+      <p class="poetic">Bruise-blue phlox and delphinium, threaded with sage and a single stem of jasmine &mdash; cut to look like a fistful of the park in May.</p>
+      <a href="#enquire" class="btn btn-light">Order This Bouquet</a>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 7 — OCCASIONS ===== -->
+  <section id="occasions" class="section">
+    <div class="wrap">
+      <div class="head-center reveal">
+        <p class="eyebrow center">&mdash; For the Moment &mdash;</p>
+        <h2 class="section-title">Flowers say it <em>better</em></h2>
+      </div>
+      <div class="occ-grid" data-stagger>
+        <div class="occ">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 21s-7-4.3-9.3-9.1C1.1 8.5 3 5 6.4 5c2 0 3.4 1.2 4.6 3 1.2-1.8 2.6-3 4.6-3 3.4 0 5.3 3.5 3.7 6.9C19 16.7 12 21 12 21z"/></svg>
+          <h4>Anniversaries</h4><p>Romance, on time</p>
+        </div>
+        <div class="occ">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 3v18M5 8c0-2 2-3 3.5-2.5C10 6 11 8 12 11c1-3 2-5 3.5-5.5C17 5 19 6 19 8c0 3-3.5 5-7 5"/></svg>
+          <h4>Sympathy</h4><p>Said gently</p>
+        </div>
+        <div class="occ">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="9" r="4"/><path d="M5 21c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg>
+          <h4>New Baby</h4><p>The softest welcome</p>
+        </div>
+        <div class="occ">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 2l2.5 6.5L21 9l-5 4 1.7 6.5L12 16l-5.7 3.5L8 13 3 9l6.5-.5z"/></svg>
+          <h4>Just Because</h4><p>No reason needed</p>
+        </div>
+        <div class="occ">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 21V10l8-6 8 6v11M9 21v-6h6v6"/></svg>
+          <h4>Weddings</h4><p>Your whole day, dressed</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 8 — GALLERY ===== -->
+  <section id="gallery" class="section">
+    <div class="wrap">
+      <div class="head-center reveal">
+        <p class="eyebrow center">&mdash; The Bench &mdash;</p>
+        <h2 class="section-title">A look at <em>recent work</em></h2>
+        <p class="lead">A handful of arrangements that left the studio this season. Tap any to see more on Instagram.</p>
+      </div>
+      <div class="masonry" data-stagger>
+        <a href="#enquire" class="tile t1"><div class="tile-inner g-a"></div><span class="view">View</span></a>
+        <a href="#enquire" class="tile t2"><div class="tile-inner g-b"></div><span class="view">View</span></a>
+        <a href="#enquire" class="tile t3"><div class="tile-inner g-c"></div><span class="view">View</span></a>
+        <a href="#enquire" class="tile t4"><div class="tile-inner g-d"></div><span class="view">View</span></a>
+        <a href="#enquire" class="tile t5"><div class="tile-inner g-e"></div><span class="view">View</span></a>
+        <a href="#enquire" class="tile t6"><div class="tile-inner g-f"></div><span class="view">View</span></a>
+        <a href="#enquire" class="tile t7"><div class="tile-inner g-c"></div><span class="view">View</span></a>
+        <a href="#enquire" class="tile t8"><div class="tile-inner g-b"></div><span class="view">View</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 9 — TESTIMONIALS ===== -->
+  <section id="testimonials" class="section">
+    <span class="quote-mark" aria-hidden="true">&rdquo;</span>
+    <div class="wrap">
+      <div class="head-center reveal">
+        <p class="eyebrow center light">&mdash; Loved By Glasgow &mdash;</p>
+      </div>
+      <div class="tcarousel" id="tcarousel">
+        <div class="tslide active">
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <blockquote>&ldquo;Ordered a bouquet for my maw&rsquo;s birthday and honestly it was that bonnie she phoned me greetin&rsquo;. Pure stunning, and lasted near three weeks.&rdquo;</blockquote>
+          <div class="who">Claire M.</div><div class="where">Partick</div>
+        </div>
+        <div class="tslide">
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <blockquote>&ldquo;They did the flowers for our wedding at Òran Mór and I still can&rsquo;t get over them. Iona just got exactly what we were after without us being able to explain it.&rdquo;</blockquote>
+          <div class="who">Stuart &amp; Rhona</div><div class="where">Hyndland</div>
+        </div>
+        <div class="tslide">
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <blockquote>&ldquo;Get the weekly flowers delivered to the office and it&rsquo;s the wee highlight of everyone&rsquo;s Monday. Never the same twice and always gorgeous.&rdquo;</blockquote>
+          <div class="who">Dev T.</div><div class="where">Finnieston</div>
+        </div>
+        <div class="tslide">
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <blockquote>&ldquo;Needed sympathy flowers in a rush and they couldn&rsquo;t have been kinder about it. Dignified, beautiful, and delivered same day across the city. Thank you.&rdquo;</blockquote>
+          <div class="who">Margaret D.</div><div class="where">Kelvinside</div>
+        </div>
+      </div>
+      <div class="tdots" id="tdots"></div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 10 — ENQUIRY / CONTACT ===== -->
+  <section id="enquire" class="section">
+    <div class="wrap enq-grid">
+      <div class="enq-copy reveal">
+        <p class="eyebrow">Order &amp; Enquire</p>
+        <h2>Let&rsquo;s make <em>something</em></h2>
+        <p class="italic">Tell us who they&rsquo;re for &mdash; we&rsquo;ll do the rest.</p>
+        <p class="lead">Same-day delivery across Glasgow on orders placed before 1pm. For weddings and events, leave a few details and we&rsquo;ll be in touch to arrange a studio consultation.</p>
+        <div class="enq-detail">
+          <div class="row">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 21s-7-5.2-7-11a7 7 0 1114 0c0 5.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            <div><div class="k">Studio</div><div class="v">238 Byres Road, Glasgow, G12 8SP</div></div>
+          </div>
+          <div class="row">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 5c0 8.3 6.7 15 15 15v-3.5l-4-1.5-2 2a12 12 0 01-6-6l2-2L7.5 5z"/></svg>
+            <div><div class="k">Call the shop</div><div class="v">0141 339 0212</div></div>
+          </div>
+          <div class="row">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 7l9 6 9-6M3 7h18v10H3z"/></svg>
+            <div><div class="k">Email</div><div class="v">hello@bluebellandbriar.co.uk</div></div>
+          </div>
+          <div class="row">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            <div><div class="k">Open</div><div class="v">Mon&ndash;Sat 9&ndash;5:30 &middot; Sun 11&ndash;4</div></div>
+          </div>
+        </div>
+      </div>
+
+      <form class="reveal" id="orderForm" novalidate>
+        <div class="f-row">
+          <div class="field"><input type="text" id="name" required /><label for="name">Your name</label><span class="underline"></span></div>
+          <div class="field"><input type="tel" id="phone" required /><label for="phone">Phone</label><span class="underline"></span></div>
+        </div>
+        <div class="field"><input type="email" id="email" required /><label for="email">Email address</label><span class="underline"></span></div>
+        <div class="f-row">
+          <div class="field">
+            <select id="occasion" required>
+              <option value="" selected disabled hidden></option>
+              <option>The Byres Road Hand-Tie</option>
+              <option>The Luxe Bloom</option>
+              <option>Letterbox Flowers</option>
+              <option>Dried &amp; Preserved</option>
+              <option>Weekly Subscription</option>
+              <option>Wedding / Event</option>
+              <option>Sympathy / Funeral</option>
+            </select>
+            <label for="occasion">What can we make?</label><span class="underline"></span>
+          </div>
+          <div class="field"><input type="date" id="date" required /><label for="date">Delivery date</label><span class="underline"></span></div>
+        </div>
+        <div class="field"><textarea id="message"></textarea><label for="message">Tell us about the occasion (optional)</label><span class="underline"></span></div>
+        <button type="submit" class="btn btn-fill" id="submitBtn">Send Enquiry
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <p class="form-note">We aim to reply within a couple of hours during shop hours.</p>
+        <div class="form-success" id="formSuccess">Thank you &mdash; your enquiry&rsquo;s landed on the bench. We&rsquo;ll be in touch shortly. 🌿</div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 11 — FIND US ===== -->
+  <section id="find" class="section">
+    <div class="wrap">
+      <div class="find-grid reveal">
+        <div class="find-info">
+          <p class="eyebrow">Find Us</p>
+          <h2>On <em>Byres Road</em>, where the big windows are</h2>
+          <div class="line">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 21s-7-5.2-7-11a7 7 0 1114 0c0 5.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            <div><b>238 Byres Road</b>Glasgow, G12 8SP</div>
+          </div>
+          <div class="line">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            <div><b>Opening Hours</b>Mon&ndash;Sat 9:00&ndash;5:30 &middot; Sun 11:00&ndash;4:00</div>
+          </div>
+          <div class="line">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 5c0 8.3 6.7 15 15 15v-3.5l-4-1.5-2 2a12 12 0 01-6-6l2-2L7.5 5z"/></svg>
+            <div><b>0141 339 0212</b>Call to order before 1pm for same-day</div>
+          </div>
+          <div class="line">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12l5 5L20 7"/></svg>
+            <div><b>Getting here</b>One minute from Hillhead subway &mdash; just up from Òran Mór and the Botanic Gardens.</div>
+          </div>
+        </div>
+        <div class="find-map" role="img" aria-label="Map showing Bluebell & Briar at 238 Byres Road, Glasgow">
+          <div class="road r1"></div><div class="road r2"></div><div class="road r3"></div>
+          <div class="map-pin">
+            <div class="pulse"></div>
+            <div class="dot"></div>
+          </div>
+          <div class="map-label">📍 <b>Bluebell &amp; Briar</b> &middot; Byres Road</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 12 — FOOTER ===== -->
+  <footer id="footer">
+    <div class="wrap">
+      <div class="foot-mark">Bluebell <span class="amp">&amp;</span> <em>Briar</em></div>
+      <p class="foot-tag">Seasonal flowers, hand-tied in Glasgow&rsquo;s West End.</p>
+      <div class="foot-social">
+        <a href="#enquire">Instagram</a>
+        <a href="#enquire">Pinterest</a>
+        <a href="#enquire">Facebook</a>
+      </div>
+      <div class="foot-cols">
+        <div>
+          <h5>Hours</h5>
+          <ul>
+            <li>Mon &ndash; Fri &nbsp; 9:00 &ndash; 5:30</li>
+            <li>Saturday &nbsp; 9:00 &ndash; 5:30</li>
+            <li>Sunday &nbsp; 11:00 &ndash; 4:00</li>
+          </ul>
+        </div>
+        <div>
+          <h5>Studio</h5>
+          <ul>
+            <li>238 Byres Road</li>
+            <li>Glasgow, G12 8SP</li>
+            <li>0141 339 0212</li>
+            <li>hello@bluebellandbriar.co.uk</li>
+          </ul>
+        </div>
+        <div>
+          <h5>Explore</h5>
+          <ul>
+            <li><a href="#collections">Collections</a></li>
+            <li><a href="#about">Our Story</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#enquire">Order Flowers</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="copyright">&copy; 2012&ndash;2026 Bluebell &amp; Briar Florist &middot; Glasgow &middot; All Rights Reserved</p>
+    </div>
+  </footer>
+
+</div><!-- /#site -->
+
+<script>
+/* ============================================================
+   BLUEBELL & BRIAR — interaction layer (vanilla JS only)
+   Note: the custom mouse-follower cursor is intentionally
+   omitted per request — every other animation is active.
+   ============================================================ */
+(function(){
+  "use strict";
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- 1. SPLASH → MAIN reveal ---------- */
+  var splash  = document.getElementById("splash");
+  var site    = document.getElementById("site");
+  var enterBtn= document.getElementById("enterBtn");
+  var body    = document.body;
+
+  function enterSite(){
+    splash.classList.add("exit");           // cinematic centre-out wipe
+    // Reveal the (already-rendered) main site beneath
+    site.classList.add("revealed");
+    body.classList.remove("is-locked");     // restore scroll
+    // Kick off the hero entrance once the curtain is moving
+    setTimeout(playHeroEntrance, 350);
+    // Remove splash from DOM entirely after the transition completes
+    setTimeout(function(){
+      if (splash && splash.parentNode){ splash.parentNode.removeChild(splash); }
+    }, 1450);
+  }
+  enterBtn.addEventListener("click", enterSite);
+  enterBtn.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" ") enterSite(); });
+
+  /* ---------- 2. HERO coordinated entrance ---------- */
+  function playHeroEntrance(){
+    var lines = document.querySelector("#hero [data-lines]");
+    if (lines) lines.classList.add("in");
+    // staggered fade-ups inside hero
+    var els = document.querySelectorAll("#hero .reveal");
+    els.forEach(function(el,i){
+      setTimeout(function(){ el.classList.add("in"); }, 500 + i*160);
+    });
+  }
+
+  /* ---------- 3. NAV: scroll state, burger, smooth anchors ---------- */
+  var nav = document.getElementById("nav");
+  window.addEventListener("scroll", function(){
+    if (window.scrollY > 40) nav.classList.add("scrolled");
+    else nav.classList.remove("scrolled");
+  }, { passive:true });
+
+  var burger = document.getElementById("burger");
+  var panel  = document.getElementById("mobilePanel");
+  function toggleMenu(force){
+    var open = force !== undefined ? force : !panel.classList.contains("open");
+    panel.classList.toggle("open", open);
+    burger.classList.toggle("open", open);
+    burger.setAttribute("aria-expanded", open);
+  }
+  burger.addEventListener("click", function(){ toggleMenu(); });
+  panel.querySelectorAll("a").forEach(function(a){ a.addEventListener("click", function(){ toggleMenu(false); }); });
+
+  // Eased smooth-scroll for all in-page anchors
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener("click", function(e){
+      var id = a.getAttribute("href");
+      if (id.length < 2) return;
+      var target = document.querySelector(id);
+      if (!target) return;
+      e.preventDefault();
+      var top = target.getBoundingClientRect().top + window.scrollY - 70;
+      window.scrollTo({ top: top, behavior: reduceMotion ? "auto" : "smooth" });
+    });
+  });
+
+  /* ---------- 4. INTERSECTION OBSERVER scroll reveals ---------- */
+  var revealSelector = ".reveal,[data-stagger],[data-lines]:not(#hero [data-lines]),[data-stats]";
+  var aboutImg = document.querySelector("[data-aboutimg]");
+
+  // staggered children timing (applies regardless of reveal mechanism)
+  document.querySelectorAll("[data-stagger]").forEach(function(group){
+    Array.prototype.forEach.call(group.children, function(child,i){
+      child.style.transitionDelay = (i*0.12) + "s";
+    });
+  });
+
+  if ("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if (!en.isIntersecting) return;
+        var el = en.target;
+        el.classList.add("in");
+        if (el.hasAttribute("data-stats")) startCounts(el); // count-up stats
+        io.unobserve(el);
+      });
+    }, { threshold:0.18, rootMargin:"0px 0px -8% 0px" });
+
+    document.querySelectorAll(revealSelector).forEach(function(el){ io.observe(el); });
+
+    // About image clip-path reveal
+    if (aboutImg){
+      var io2 = new IntersectionObserver(function(e){
+        if (e[0].isIntersecting){ aboutImg.classList.add("in"); io2.disconnect(); }
+      }, { threshold:0.3 });
+      io2.observe(aboutImg);
+    }
+  } else {
+    // Fallback: no IntersectionObserver — reveal everything up-front so no
+    // content can ever be stranded at opacity:0.
+    document.querySelectorAll(revealSelector).forEach(function(el){
+      el.classList.add("in");
+      if (el.hasAttribute("data-stats")) startCounts(el);
+    });
+    if (aboutImg) aboutImg.classList.add("in");
+  }
+
+  /* ---------- 5. COUNT-UP stats ---------- */
+  function startCounts(scope){
+    scope.querySelectorAll("[data-count]").forEach(function(node){
+      var target = parseInt(node.getAttribute("data-count"),10);
+      var suffix = node.getAttribute("data-suffix") || "";
+      if (reduceMotion){ node.textContent = target.toLocaleString() + suffix; return; }
+      var dur = 1600, start = null;
+      function step(ts){
+        if (!start) start = ts;
+        var p = Math.min((ts-start)/dur, 1);
+        var eased = 1 - Math.pow(1-p, 3);          // easeOutCubic
+        var val = Math.floor(eased * target);
+        node.textContent = val.toLocaleString() + (p===1 ? suffix : "");
+        if (p < 1) requestAnimationFrame(step);
+        else node.textContent = target.toLocaleString() + suffix;
+      }
+      requestAnimationFrame(step);
+    });
+  }
+
+  /* ---------- 6. SPOTLIGHT parallax (passive) ---------- */
+  var parallax = document.querySelector("[data-parallax]");
+  if (parallax && !reduceMotion){
+    var spotlight = document.getElementById("spotlight");
+    window.addEventListener("scroll", function(){
+      var rect = spotlight.getBoundingClientRect();
+      if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+      var offset = (window.innerHeight - rect.top) * 0.12;
+      parallax.style.transform = "translateY(" + (offset - 40) + "px)";
+    }, { passive:true });
+  }
+
+  /* ---------- 7. TESTIMONIAL carousel ---------- */
+  (function(){
+    var slides = Array.prototype.slice.call(document.querySelectorAll(".tslide"));
+    var dotsBox = document.getElementById("tdots");
+    var carousel = document.getElementById("tcarousel");
+    if (!slides.length) return;
+    var idx = 0, timer = null, DELAY = 5500;
+
+    slides.forEach(function(_,i){
+      var d = document.createElement("button");
+      d.className = "tdot" + (i===0 ? " active":"");
+      d.setAttribute("aria-label","Testimonial "+(i+1));
+      d.addEventListener("click", function(){ go(i); reset(); });
+      dotsBox.appendChild(d);
+    });
+    var dots = Array.prototype.slice.call(dotsBox.children);
+
+    function go(n){
+      slides[idx].classList.remove("active");
+      dots[idx].classList.remove("active");
+      idx = (n + slides.length) % slides.length;
+      slides[idx].classList.add("active");
+      dots[idx].classList.add("active");
+    }
+    function next(){ go(idx+1); }
+    function start(){ if(!reduceMotion) timer = setInterval(next, DELAY); }
+    function reset(){ clearInterval(timer); start(); }
+    carousel.addEventListener("mouseenter", function(){ clearInterval(timer); });
+    carousel.addEventListener("mouseleave", start);
+    start();
+  })();
+
+  /* ---------- 8. FORM: floating labels + ripple + submit ---------- */
+  // keep label floated when a field has a value
+  document.querySelectorAll(".field input,.field select,.field textarea").forEach(function(f){
+    function sync(){ f.classList.toggle("filled", !!f.value); }
+    f.addEventListener("input", sync);
+    f.addEventListener("change", sync);
+    f.addEventListener("blur", sync);
+  });
+
+  // set min date = today
+  var dateField = document.getElementById("date");
+  if (dateField){
+    var t = new Date();
+    var iso = t.getFullYear() + "-" + String(t.getMonth()+1).padStart(2,"0") + "-" + String(t.getDate()).padStart(2,"0");
+    dateField.min = iso;
+  }
+
+  var form = document.getElementById("orderForm");
+  var success = document.getElementById("formSuccess");
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    if (!form.checkValidity()){ form.reportValidity(); return; }
+    success.classList.add("show");
+    form.querySelector("#submitBtn").textContent = "Sent ✓";
+    setTimeout(function(){ form.reset();
+      form.querySelectorAll(".filled").forEach(function(n){ n.classList.remove("filled"); });
+    }, 600);
+  });
+
+  /* ---------- 9. Button ripple effect ---------- */
+  document.querySelectorAll(".btn,.splash-cta").forEach(function(btn){
+    btn.addEventListener("mousedown", function(e){
+      var rect = btn.getBoundingClientRect();
+      var size = Math.max(rect.width, rect.height);
+      var r = document.createElement("span");
+      r.className = "ripple";
+      r.style.width = r.style.height = size + "px";
+      r.style.left = (e.clientX - rect.left - size/2) + "px";
+      r.style.top  = (e.clientY - rect.top  - size/2) + "px";
+      btn.appendChild(r);
+      setTimeout(function(){ r.remove(); }, 680);
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
