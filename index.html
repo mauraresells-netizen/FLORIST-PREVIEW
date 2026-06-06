@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Florist — Glasgow West End | Flowers &amp; Bouquets</title>
+<title>Florist - Glasgow West End | Flowers & Bouquets</title>
 <meta name="description" content="An independent florist in Glasgow's West End. Seasonal hand-tied bouquets, weddings, sympathy flowers and weekly subscriptions, delivered across the city." />
 
 <!-- ============================================================
      GOOGLE FONTS
-     Fraunces  — characterful, soft optical serif (display)
-     Jost      — clean geometric sans (body / UI)
+     Fraunces  - characterful, soft optical serif (display)
+     Jost      - clean geometric sans (body / UI)
      ============================================================ -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,13 +17,13 @@
 
 <style>
 /* ============================================================
-   DESIGN TOKENS  — every colour, font, space & timing value
+   DESIGN TOKENS  - every colour, font, space & timing value
    Palette derived from the supplied blue-phlox splash image:
    midnight violet, blooming violet, periwinkle, sage stem,
    warm cream and a misty lilac.
    ============================================================ */
 :root{
-  /* — Colour — */
+  /* - Colour - */
   --ink:        #1c241f;   /* deep charcoal-green (text / dark sections) */
   --ink-soft:   #36423a;   /* softer ink for secondary dark */
   --bloom:      #2f6b53;   /* botanical emerald (primary) */
@@ -38,20 +38,20 @@
   --mist:       #e8ede4;   /* soft sage mist (light section bg) */
   --line:       rgba(28,36,31,.12); /* hairline */
 
-  /* — Type — */
+  /* - Type - */
   --serif: "Fraunces", Georgia, "Times New Roman", serif;
   --sans:  "Jost", "Helvetica Neue", Arial, sans-serif;
 
-  /* — Spacing scale — */
+  /* - Spacing scale - */
   --s-1: .5rem;  --s-2: 1rem;   --s-3: 1.5rem;  --s-4: 2rem;
   --s-5: 3rem;   --s-6: 4.5rem; --s-7: 7rem;    --s-8: 10rem;
 
-  /* — Layout — */
+  /* - Layout - */
   --maxw: 1240px;
   --gutter: clamp(1.25rem, 5vw, 4rem);
   --radius: 4px;
 
-  /* — Motion — */
+  /* - Motion - */
   --ease-soft:  cubic-bezier(0.22, 1, 0.36, 1);   /* reveals */
   --ease-hover: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* transforms */
   --t-colour: .3s ease;
@@ -85,7 +85,7 @@ h1,h2,h3,h4{ font-family:var(--serif); font-weight:400; line-height:1.08; }
 body.is-locked{ overflow:hidden; height:100vh; }
 
 /* The main site is inert until the splash transition completes.
-   It begins very slightly zoomed-in and settles as the splash dissolves —
+   It begins very slightly zoomed-in and settles as the splash dissolves -
    a smooth cross-dissolve into the page. */
 #site{
   visibility:hidden;
@@ -98,23 +98,25 @@ body.is-locked{ overflow:hidden; height:100vh; }
 #site.revealed{ visibility:visible; pointer-events:auto; opacity:1; transform:none; }
 
 /* ============================================================
-   GRAIN OVERLAY  — permanent tactile SVG noise over everything
+   GRAIN OVERLAY  - permanent tactile SVG noise over everything
    ============================================================ */
 .grain{
   position:fixed; inset:0; z-index:9000; pointer-events:none;
-  opacity:.035; mix-blend-mode:multiply;
+  /* Low-opacity normal blend (no mix-blend-mode) so it never forces
+     per-frame repaints during scrolling or animation. */
+  opacity:.05;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* ============================================================
-   SECTION 1 — SPLASH / ENTRY PAGE
+   SECTION 1 - SPLASH / ENTRY PAGE
    Full-screen image, sits above everything until the user enters.
    ============================================================ */
 #splash{
   position:fixed; inset:0; z-index:9999; overflow:hidden;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   text-align:center; color:var(--cream);
-  /* >>> SPLASH IMAGE SWAP POINT — drop the supplied photo here <<<
+  /* >>> SPLASH IMAGE SWAP POINT - drop the supplied photo here <<<
      The gradients are translucent overlays (for text legibility) so the
      photo shows through. If no photo is supplied, they read as a violet
      placeholder on their own. */
@@ -123,16 +125,16 @@ body.is-locked{ overflow:hidden; height:100vh; }
     linear-gradient(160deg, rgba(31,74,57,.42) 0%, rgba(28,36,31,.30) 45%, rgba(20,28,22,.58) 100%),
     url("splash.jpg");
   background-size:cover; background-position:center;
-  transition:opacity 1.2s ease, transform 1.4s var(--ease-soft), filter 1.2s ease;
-  transform:scale(1); filter:blur(0);
-  will-change:opacity, transform, filter;
+  transition:opacity 1.2s ease, transform 1.4s var(--ease-soft);
+  transform:scale(1);
+  will-change:opacity, transform;
 }
-/* Smooth cinematic exit — the splash gently zooms forward, softens and
-   dissolves while the site settles in beneath it. */
+/* Smooth cinematic exit - the splash gently zooms forward and dissolves
+   while the site settles in beneath it. Pure opacity + transform, so it's
+   composited on the GPU and stays buttery on any machine. */
 #splash.exit{
   opacity:0;
   transform:scale(1.16);
-  filter:blur(8px);
 }
 /* The splash content lifts and fades a beat ahead of the backdrop */
 #splash.exit .splash-inner{
@@ -194,7 +196,7 @@ body.is-locked{ overflow:hidden; height:100vh; }
 }
 
 /* ============================================================
-   SECTION 2 — NAVIGATION
+   SECTION 2 - NAVIGATION
    Fixed, inert during splash, fades in after reveal.
    ============================================================ */
 #nav{
@@ -263,7 +265,7 @@ body.is-locked{ overflow:hidden; height:100vh; }
 .mobile-panel .mp-tag{ font-family:var(--sans); font-size:.7rem; letter-spacing:.3em; text-transform:uppercase; color:var(--peri); margin-bottom:.5rem; }
 
 /* ============================================================
-   SHARED — section headings, eyebrows, buttons
+   SHARED - section headings, eyebrows, buttons
    ============================================================ */
 .section{ padding:var(--s-7) 0; position:relative; }
 .wrap{ max-width:var(--maxw); margin:0 auto; padding:0 var(--gutter); }
@@ -309,7 +311,7 @@ body.is-locked{ overflow:hidden; height:100vh; }
 .lines.in .word > span{ transform:translateY(0); }
 
 /* ============================================================
-   SECTION 3 — HERO
+   SECTION 3 - HERO
    ============================================================ */
 #hero{
   min-height:100vh; display:flex; align-items:center; position:relative; overflow:hidden;
@@ -335,15 +337,15 @@ body.is-locked{ overflow:hidden; height:100vh; }
 .hero-meta{ margin-top:3rem; display:flex; gap:2.4rem; flex-wrap:wrap; font-size:.82rem; letter-spacing:.04em; color:var(--ink-soft); }
 .hero-meta b{ display:block; font-family:var(--serif); font-size:1.5rem; color:var(--bloom); font-weight:400; }
 
-/* hero visual — framed photo + floating card */
+/* hero visual - framed photo + floating card */
 .hero-visual{ position:relative; }
 .hero-photo{
   aspect-ratio:3/4; border-radius:4px; position:relative; overflow:hidden;
   box-shadow:0 40px 80px -40px rgba(21,19,43,.5);
   /* >>> HERO IMAGE SWAP POINT <<< (botanical close-up) */
   background:
-    linear-gradient(160deg, rgba(75,63,143,.15), rgba(21,19,43,.35)),
-    url("splash.jpg");
+    linear-gradient(160deg, rgba(28,36,31,.06), rgba(28,36,31,.26)),
+    url("images/hero.jpg");
   background-size:cover; background-position:center;
 }
 .hero-photo::after{ content:""; position:absolute; inset:14px; border:1px solid rgba(247,244,236,.5); pointer-events:none; }
@@ -369,7 +371,7 @@ body.is-locked{ overflow:hidden; height:100vh; }
 }
 .petal:nth-child(even){ background:linear-gradient(135deg, #f3d9d1, var(--stem)); width:11px; height:11px; }
 .petal:nth-child(3n){ background:linear-gradient(135deg, #cfe0cf, var(--bloom)); }
-/* staggered positions / speeds — each petal placed and timed distinctly */
+/* staggered positions / speeds - each petal placed and timed distinctly */
 .petal:nth-child(1){ left:8%;  animation-duration:11s; animation-delay:0s;   }
 .petal:nth-child(2){ left:20%; animation-duration:14s; animation-delay:2.5s; }
 .petal:nth-child(3){ left:33%; animation-duration:9s;  animation-delay:1.2s; }
@@ -399,7 +401,7 @@ body.is-locked{ overflow:hidden; height:100vh; }
 .reveal.in .eyebrow::before,.reveal.in .eyebrow.center::after{ width:34px; }
 
 /* ============================================================
-   SECTION 4 — COLLECTIONS (core offering grid)
+   SECTION 4 - COLLECTIONS (core offering grid)
    ============================================================ */
 #collections{ background:var(--cream); }
 .head-center{ text-align:center; max-width:60ch; margin:0 auto var(--s-6); }
@@ -428,7 +430,7 @@ body.is-locked{ overflow:hidden; height:100vh; }
 .card .c-line{ height:1px; background:var(--line); margin:1.3rem 0; }
 
 /* ============================================================
-   SECTION 5 — ABOUT / OUR STORY  + count-up stats
+   SECTION 5 - ABOUT / OUR STORY  + count-up stats
    ============================================================ */
 #about{ background:var(--mist); }
 .about-grid{ display:grid; grid-template-columns:.9fr 1.1fr; gap:var(--s-6); align-items:center; }
@@ -437,7 +439,7 @@ body.is-locked{ overflow:hidden; height:100vh; }
   box-shadow:0 36px 70px -36px rgba(21,19,43,.45);
   clip-path:inset(0 0 100% 0); transition:clip-path 1.1s var(--ease-soft);
   /* >>> ABOUT IMAGE SWAP POINT <<< (florist at the bench) */
-  background:linear-gradient(150deg, rgba(75,63,143,.2), rgba(21,19,43,.3)), url("splash.jpg");
+  background:linear-gradient(150deg, rgba(28,36,31,.10), rgba(28,36,31,.28)), url("images/about.jpg");
   background-size:cover; background-position:center;
 }
 .about-img.in{ clip-path:inset(0 0 0 0); }
@@ -451,13 +453,13 @@ body.is-locked{ overflow:hidden; height:100vh; }
 .stat .lab{ font-size:.76rem; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); margin-top:.5rem; max-width:16ch; }
 
 /* ============================================================
-   SECTION 6 — SPOTLIGHT (full-width, parallax)
+   SECTION 6 - SPOTLIGHT (full-width, parallax)
    ============================================================ */
 #spotlight{ position:relative; min-height:78vh; display:flex; align-items:center; justify-content:center; overflow:hidden; text-align:center; color:var(--cream); }
 .spot-bg{
   position:absolute; inset:-12% 0; z-index:0; will-change:transform;
   /* >>> SPOTLIGHT IMAGE SWAP POINT <<< (signature bouquet hero shot) */
-  background:linear-gradient(rgba(21,19,43,.55),rgba(21,19,43,.7)), url("splash.jpg");
+  background:linear-gradient(rgba(20,28,22,.52),rgba(20,28,22,.66)), url("images/spotlight.jpg");
   background-size:cover; background-position:center;
 }
 .spot-inner{ position:relative; z-index:2; padding:var(--s-6) var(--gutter); max-width:760px; }
@@ -470,7 +472,7 @@ body.is-locked{ overflow:hidden; height:100vh; }
 .btn-light:hover{ background:var(--cream); color:var(--ink); transform:translateY(-3px); }
 
 /* ============================================================
-   SECTION 7 — OCCASIONS band
+   SECTION 7 - OCCASIONS band
    ============================================================ */
 #occasions{ background:var(--cream); }
 .occ-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:1rem; }
@@ -486,13 +488,13 @@ body.is-locked{ overflow:hidden; height:100vh; }
 .occ:hover p{ color:var(--peri-soft); }
 
 /* ============================================================
-   SECTION 8 — GALLERY (editorial masonry)
+   SECTION 8 - GALLERY (editorial masonry)
    ============================================================ */
 #gallery{ background:var(--mist); }
 .masonry{ display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:150px; gap:1rem; }
 .tile{
   position:relative; overflow:hidden; border-radius:4px; background-size:cover; background-position:center;
-  /* >>> GALLERY IMAGE SWAP POINTS — replace each gradient with a photo <<< */
+  /* >>> GALLERY IMAGE SWAP POINTS - replace each gradient with a photo <<< */
 }
 .tile::after{ content:""; position:absolute; inset:0; background:linear-gradient(transparent 40%, rgba(21,19,43,.5)); opacity:0; transition:opacity var(--t-colour); }
 .tile .view{
@@ -513,15 +515,17 @@ body.is-locked{ overflow:hidden; height:100vh; }
 .t7{ grid-column:span 1; grid-row:span 1; }
 .t8{ grid-column:span 2; grid-row:span 1; }
 /* tinted gradient placeholders, each distinct so the grid reads as real photos */
-.g-a{ background-image:linear-gradient(135deg,#3f8568,#1f4a39); }
-.g-b{ background-image:linear-gradient(135deg,#c47a5a,#7a3f2b); }
-.g-c{ background-image:linear-gradient(135deg,#e9b3a6,#b3654a); }
-.g-d{ background-image:linear-gradient(135deg,#d6b878,#8a6a33); }
-.g-e{ background-image:linear-gradient(135deg,#1f4a39,#1c241f); }
-.g-f{ background-image:linear-gradient(135deg,#efc9bf,#7c8a5a); }
+.gi-1{ background-image:url("images/g1.jpg"); }
+.gi-2{ background-image:url("images/g2.jpg"); }
+.gi-3{ background-image:url("images/g3.jpg"); }
+.gi-4{ background-image:url("images/g4.jpg"); }
+.gi-5{ background-image:url("images/g5.jpg"); }
+.gi-6{ background-image:url("images/g6.jpg"); }
+.gi-7{ background-image:url("images/g7.jpg"); }
+.gi-8{ background-image:url("splash.jpg"); }
 
 /* ============================================================
-   SECTION 9 — TESTIMONIALS (dark, carousel)
+   SECTION 9 - TESTIMONIALS (dark, carousel)
    ============================================================ */
 #testimonials{ background:var(--ink); color:var(--cream); position:relative; overflow:hidden; }
 #testimonials .quote-mark{
@@ -543,7 +547,7 @@ body.is-locked{ overflow:hidden; height:100vh; }
 .tdot.active{ background:var(--gold); transform:scale(1.3); }
 
 /* ============================================================
-   SECTION 10 — ENQUIRY / CONTACT (floating-label form)
+   SECTION 10 - ENQUIRY / CONTACT (floating-label form)
    ============================================================ */
 #enquire{ background:var(--cream); }
 .enq-grid{ display:grid; grid-template-columns:1fr 1.15fr; gap:var(--s-6); align-items:start; }
@@ -582,7 +586,7 @@ form{ display:grid; gap:1.7rem; }
 .form-success.show{ display:block; }
 
 /* ============================================================
-   SECTION 11 — FIND US (styled map + pin)
+   SECTION 11 - FIND US (styled map + pin)
    ============================================================ */
 #find{ background:var(--mist); }
 .find-grid{ display:grid; grid-template-columns:1fr 1fr; gap:0; border-radius:6px; overflow:hidden; box-shadow:0 30px 60px -34px rgba(21,19,43,.4); }
@@ -614,7 +618,7 @@ form{ display:grid; gap:1.7rem; }
 .map-label b{ color:var(--bloom); }
 
 /* ============================================================
-   SECTION 12 — FOOTER
+   SECTION 12 - FOOTER
    ============================================================ */
 #footer{ background:var(--bloom-deep); color:var(--cream); padding:var(--s-6) 0 2rem; border-top:2px solid var(--gold); text-align:center; }
 .foot-mark{ font-family:var(--serif); font-size:2.6rem; letter-spacing:.02em; margin-bottom:.5rem; }
@@ -659,8 +663,8 @@ form{ display:grid; gap:1.7rem; }
    This is a designed, animation-forward marketing site, so the entrance,
    scroll-reveal, headline, carousel and click-through transitions are kept
    alive even when the OS requests reduced motion (otherwise the page reads
-   as dead). We only calm the *continuous, looping* background motion — the
-   drifting blobs and falling petals — which are the parts that can actually
+   as dead). We only calm the *continuous, looping* background motion - the
+   drifting blobs and falling petals - which are the parts that can actually
    bother motion-sensitive viewers. */
 @media (prefers-reduced-motion:reduce){
   .drift,.petal{ animation:none !important; }
@@ -676,11 +680,11 @@ form{ display:grid; gap:1.7rem; }
 <div class="grain" aria-hidden="true"></div>
 
 <!-- ============================================================
-     SECTION 1 — SPLASH / ENTRY
+     SECTION 1 - SPLASH / ENTRY
      ============================================================ -->
 <div id="splash" role="dialog" aria-label="Welcome to Florist">
   <div class="splash-inner">
-    <p class="splash-eyebrow">Glasgow&rsquo;s West End &middot; Est. 2012</p>
+    <p class="splash-eyebrow">Glasgow's West End | Est. 2012</p>
     <h1 class="splash-name">Florist</h1>
     <p class="splash-desc">Independent Flower Studio</p>
     <button class="splash-cta" id="enterBtn">
@@ -698,7 +702,7 @@ form{ display:grid; gap:1.7rem; }
   <!-- Scroll-progress bar -->
   <div id="progress" aria-hidden="true"></div>
 
-  <!-- ===== SECTION 2 — NAVIGATION ===== -->
+  <!-- ===== SECTION 2 - NAVIGATION ===== -->
   <nav id="nav">
     <a href="#hero" class="nav-logo"><em>Florist</em></a>
     <ul class="nav-links">
@@ -724,7 +728,7 @@ form{ display:grid; gap:1.7rem; }
     <a href="#enquire">Order Flowers</a>
   </div>
 
-  <!-- ===== SECTION 3 — HERO ===== -->
+  <!-- ===== SECTION 3 - HERO ===== -->
   <header id="hero">
     <div class="drift d1"></div><div class="drift d2"></div><div class="drift d3"></div>
     <!-- Falling petals -->
@@ -746,42 +750,42 @@ form{ display:grid; gap:1.7rem; }
           <span class="word"><span>for</span></span>
           <span class="word"><span><em>you.</em></span></span>
         </h1>
-        <p class="hero-tag reveal">A small studio on Byres Road, arranging <strong>seasonal British blooms</strong> into hand-tied bouquets &mdash; delivered across Glasgow, six days a week.</p>
+        <p class="hero-tag reveal">A small studio on Byres Road, arranging <strong>seasonal British blooms</strong> into hand-tied bouquets - delivered across Glasgow, six days a week.</p>
         <div class="hero-btns reveal">
           <a href="#collections" class="btn btn-fill">View the Collection</a>
           <a href="#enquire" class="btn btn-ghost">Order a Bouquet</a>
         </div>
         <div class="hero-meta reveal">
           <div><b>Daily</b>Fresh cuts from the market</div>
-          <div><b>6 Days</b>Glasgow delivery Mon&ndash;Sat</div>
+          <div><b>6 Days</b>Glasgow delivery Mon-Sat</div>
           <div><b>2012</b>On Byres Road since</div>
         </div>
       </div>
       <div class="hero-visual reveal">
         <div class="hero-photo"></div>
         <div class="hero-float">
-          <div class="hf-k">&ldquo;The wee shop with the big windows.&rdquo;</div>
-          <div class="hf-s">&mdash; said by half of the West End</div>
+          <div class="hf-k">"The wee shop with the big windows."</div>
+          <div class="hf-s">- said by half of the West End</div>
         </div>
       </div>
     </div>
     <div class="scroll-hint">Scroll<span></span></div>
   </header>
 
-  <!-- ===== SECTION 4 — COLLECTIONS ===== -->
+  <!-- ===== SECTION 4 - COLLECTIONS ===== -->
   <section id="collections" class="section">
     <div class="wrap">
       <div class="head-center reveal">
-        <p class="eyebrow center">&mdash; The Collection &mdash;</p>
+        <p class="eyebrow center">- The Collection -</p>
         <h2 class="section-title">Bouquets for every <em>chapter</em></h2>
-        <p class="lead">Everything is made fresh to order from whatever&rsquo;s loveliest at the flower market that morning. Prices are a guide &mdash; tell us your budget and we&rsquo;ll make it sing.</p>
+        <p class="lead">Everything is made fresh to order from whatever's loveliest at the flower market that morning. Prices are a guide - tell us your budget and we'll make it sing.</p>
       </div>
 
       <div class="card-grid" data-stagger>
         <article class="card">
           <p class="c-tag">Everyday Favourite</p>
           <h3>The <em>Byres Road</em> Hand-Tie</h3>
-          <p>Our signature seasonal posy &mdash; soft, garden-gathered and never stiff. Wrapped in kraft and ribbon.</p>
+          <p>Our signature seasonal posy - soft, garden-gathered and never stiff. Wrapped in kraft and ribbon.</p>
           <div class="c-line"></div>
           <div class="price">£38 <small>/ from</small></div>
         </article>
@@ -801,14 +805,14 @@ form{ display:grid; gap:1.7rem; }
         </article>
         <article class="card">
           <p class="c-tag">Everlasting</p>
-          <h3>Dried &amp; <em>Preserved</em></h3>
-          <p>Naturally dried grasses and blooms in our house palette &mdash; lasts months, no water needed.</p>
+          <h3>Dried & <em>Preserved</em></h3>
+          <p>Naturally dried grasses and blooms in our house palette - lasts months, no water needed.</p>
           <div class="c-line"></div>
           <div class="price">£34 <small>/ from</small></div>
         </article>
         <article class="card">
           <p class="c-tag">Your Day</p>
-          <h3>Weddings &amp; <em>Events</em></h3>
+          <h3>Weddings & <em>Events</em></h3>
           <p>Bridal bouquets, buttonholes, arches and table flowers. Free consultation in the studio over tea.</p>
           <div class="c-line"></div>
           <div class="price">£450 <small>/ packages from</small></div>
@@ -816,7 +820,7 @@ form{ display:grid; gap:1.7rem; }
         <article class="card">
           <p class="c-tag">A Little Ritual</p>
           <h3>Weekly <em>Subscription</em></h3>
-          <p>Fresh flowers delivered every week or fortnight. Pause or cancel anytime &mdash; no fuss.</p>
+          <p>Fresh flowers delivered every week or fortnight. Pause or cancel anytime - no fuss.</p>
           <div class="c-line"></div>
           <div class="price">£32 <small>/ per delivery</small></div>
         </article>
@@ -824,42 +828,42 @@ form{ display:grid; gap:1.7rem; }
     </div>
   </section>
 
-  <!-- ===== SECTION 5 — ABOUT / OUR STORY ===== -->
+  <!-- ===== SECTION 5 - ABOUT / OUR STORY ===== -->
   <section id="about" class="section">
     <div class="wrap about-grid">
       <div class="about-img" data-aboutimg></div>
       <div class="about-copy">
         <p class="eyebrow">Our Story</p>
         <h2>Grown close to home, <em>arranged with care</em></h2>
-        <p><span class="first">We opened our doors in 2012</span>, in a narrow shop on Byres Road with good light and a leaky back door. Iona had spent years on the wholesale flower markets and wanted to do things differently &mdash; seasonal, a little wild, never the same bunch twice.</p>
-        <p>We work with Scottish growers wherever the season allows &mdash; ranunculus and sweet peas in spring, dahlias and cosmos through the late summer &mdash; topping up with the best of the Dutch market for the rest. Nothing is forced into a foam-block. Everything is hand-tied so it keeps growing the way it wants to.</p>
-        <p>Pop your head in, tell us who the flowers are for, and we&rsquo;ll make something just for them. That&rsquo;s always been the whole idea.</p>
+        <p><span class="first">We opened our doors in 2012</span>, in a narrow shop on Byres Road with good light and a leaky back door. Iona had spent years on the wholesale flower markets and wanted to do things differently - seasonal, a little wild, never the same bunch twice.</p>
+        <p>We work with Scottish growers wherever the season allows - ranunculus and sweet peas in spring, dahlias and cosmos through the late summer - topping up with the best of the Dutch market for the rest. Nothing is forced into a foam-block. Everything is hand-tied so it keeps growing the way it wants to.</p>
+        <p>Pop your head in, tell us who the flowers are for, and we'll make something just for them. That's always been the whole idea.</p>
         <div class="stats" data-stats>
           <div class="stat"><div class="num" data-count="2012" data-suffix="">0</div><div class="lab">Rooted on Byres Road since</div></div>
-          <div class="stat"><div class="num" data-count="14000" data-suffix="+">0</div><div class="lab">Bouquets tied &amp; delivered</div></div>
+          <div class="stat"><div class="num" data-count="14000" data-suffix="+">0</div><div class="lab">Bouquets tied & delivered</div></div>
           <div class="stat"><div class="num" data-count="320" data-suffix="+">0</div><div class="lab">Glasgow weddings dressed</div></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== SECTION 6 — SPOTLIGHT ===== -->
+  <!-- ===== SECTION 6 - SPOTLIGHT ===== -->
   <section id="spotlight">
     <div class="spot-bg" data-parallax></div>
     <div class="spot-frame"></div>
     <div class="spot-inner reveal">
-      <p class="eyebrow center">&mdash; Bloom of the Season &mdash;</p>
+      <p class="eyebrow center">- Bloom of the Season -</p>
       <h2>The <em>Kelvingrove</em> Posy</h2>
-      <p class="poetic">Bruise-blue phlox and delphinium, threaded with sage and a single stem of jasmine &mdash; cut to look like a fistful of the park in May.</p>
+      <p class="poetic">Bruise-blue phlox and delphinium, threaded with sage and a single stem of jasmine - cut to look like a fistful of the park in May.</p>
       <a href="#enquire" class="btn btn-light">Order This Bouquet</a>
     </div>
   </section>
 
-  <!-- ===== SECTION 7 — OCCASIONS ===== -->
+  <!-- ===== SECTION 7 - OCCASIONS ===== -->
   <section id="occasions" class="section">
     <div class="wrap">
       <div class="head-center reveal">
-        <p class="eyebrow center">&mdash; For the Moment &mdash;</p>
+        <p class="eyebrow center">- For the Moment -</p>
         <h2 class="section-title">Flowers say it <em>better</em></h2>
       </div>
       <div class="occ-grid" data-stagger>
@@ -887,53 +891,53 @@ form{ display:grid; gap:1.7rem; }
     </div>
   </section>
 
-  <!-- ===== SECTION 8 — GALLERY ===== -->
+  <!-- ===== SECTION 8 - GALLERY ===== -->
   <section id="gallery" class="section">
     <div class="wrap">
       <div class="head-center reveal">
-        <p class="eyebrow center">&mdash; The Bench &mdash;</p>
+        <p class="eyebrow center">- The Bench -</p>
         <h2 class="section-title">A look at <em>recent work</em></h2>
         <p class="lead">A handful of arrangements that left the studio this season. Tap any to see more on Instagram.</p>
       </div>
       <div class="masonry" data-stagger>
-        <a href="#enquire" class="tile t1"><div class="tile-inner g-a"></div><span class="view">View</span></a>
-        <a href="#enquire" class="tile t2"><div class="tile-inner g-b"></div><span class="view">View</span></a>
-        <a href="#enquire" class="tile t3"><div class="tile-inner g-c"></div><span class="view">View</span></a>
-        <a href="#enquire" class="tile t4"><div class="tile-inner g-d"></div><span class="view">View</span></a>
-        <a href="#enquire" class="tile t5"><div class="tile-inner g-e"></div><span class="view">View</span></a>
-        <a href="#enquire" class="tile t6"><div class="tile-inner g-f"></div><span class="view">View</span></a>
-        <a href="#enquire" class="tile t7"><div class="tile-inner g-c"></div><span class="view">View</span></a>
-        <a href="#enquire" class="tile t8"><div class="tile-inner g-b"></div><span class="view">View</span></a>
+        <a href="#enquire" class="tile t1"><div class="tile-inner gi-1"></div><span class="view">View</span></a>
+        <a href="#enquire" class="tile t2"><div class="tile-inner gi-2"></div><span class="view">View</span></a>
+        <a href="#enquire" class="tile t3"><div class="tile-inner gi-3"></div><span class="view">View</span></a>
+        <a href="#enquire" class="tile t4"><div class="tile-inner gi-4"></div><span class="view">View</span></a>
+        <a href="#enquire" class="tile t5"><div class="tile-inner gi-5"></div><span class="view">View</span></a>
+        <a href="#enquire" class="tile t6"><div class="tile-inner gi-6"></div><span class="view">View</span></a>
+        <a href="#enquire" class="tile t7"><div class="tile-inner gi-7"></div><span class="view">View</span></a>
+        <a href="#enquire" class="tile t8"><div class="tile-inner gi-8"></div><span class="view">View</span></a>
       </div>
     </div>
   </section>
 
-  <!-- ===== SECTION 9 — TESTIMONIALS ===== -->
+  <!-- ===== SECTION 9 - TESTIMONIALS ===== -->
   <section id="testimonials" class="section">
-    <span class="quote-mark" aria-hidden="true">&rdquo;</span>
+    <span class="quote-mark" aria-hidden="true">"</span>
     <div class="wrap">
       <div class="head-center reveal">
-        <p class="eyebrow center light">&mdash; Loved By Glasgow &mdash;</p>
+        <p class="eyebrow center light">- Loved By Glasgow -</p>
       </div>
       <div class="tcarousel" id="tcarousel">
         <div class="tslide active">
           <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <blockquote>&ldquo;Ordered a bouquet for my maw&rsquo;s birthday and honestly it was that bonnie she phoned me greetin&rsquo;. Pure stunning, and lasted near three weeks.&rdquo;</blockquote>
+          <blockquote>"Ordered a bouquet for my maw's birthday and honestly it was that bonnie she phoned me greetin'. Pure stunning, and lasted near three weeks."</blockquote>
           <div class="who">Claire M.</div><div class="where">Partick</div>
         </div>
         <div class="tslide">
           <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <blockquote>&ldquo;They did the flowers for our wedding at Òran Mór and I still can&rsquo;t get over them. Iona just got exactly what we were after without us being able to explain it.&rdquo;</blockquote>
-          <div class="who">Stuart &amp; Rhona</div><div class="where">Hyndland</div>
+          <blockquote>"They did the flowers for our wedding at Oran Mor and I still can't get over them. Iona just got exactly what we were after without us being able to explain it."</blockquote>
+          <div class="who">Stuart & Rhona</div><div class="where">Hyndland</div>
         </div>
         <div class="tslide">
           <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <blockquote>&ldquo;Get the weekly flowers delivered to the office and it&rsquo;s the wee highlight of everyone&rsquo;s Monday. Never the same twice and always gorgeous.&rdquo;</blockquote>
+          <blockquote>"Get the weekly flowers delivered to the office and it's the wee highlight of everyone's Monday. Never the same twice and always gorgeous."</blockquote>
           <div class="who">Dev T.</div><div class="where">Finnieston</div>
         </div>
         <div class="tslide">
           <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <blockquote>&ldquo;Needed sympathy flowers in a rush and they couldn&rsquo;t have been kinder about it. Dignified, beautiful, and delivered same day across the city. Thank you.&rdquo;</blockquote>
+          <blockquote>"Needed sympathy flowers in a rush and they couldn't have been kinder about it. Dignified, beautiful, and delivered same day across the city. Thank you."</blockquote>
           <div class="who">Margaret D.</div><div class="where">Kelvinside</div>
         </div>
       </div>
@@ -941,14 +945,14 @@ form{ display:grid; gap:1.7rem; }
     </div>
   </section>
 
-  <!-- ===== SECTION 10 — ENQUIRY / CONTACT ===== -->
+  <!-- ===== SECTION 10 - ENQUIRY / CONTACT ===== -->
   <section id="enquire" class="section">
     <div class="wrap enq-grid">
       <div class="enq-copy reveal">
-        <p class="eyebrow">Order &amp; Enquire</p>
-        <h2>Let&rsquo;s make <em>something</em></h2>
-        <p class="italic">Tell us who they&rsquo;re for &mdash; we&rsquo;ll do the rest.</p>
-        <p class="lead">Same-day delivery across Glasgow on orders placed before 1pm. For weddings and events, leave a few details and we&rsquo;ll be in touch to arrange a studio consultation.</p>
+        <p class="eyebrow">Order & Enquire</p>
+        <h2>Let's make <em>something</em></h2>
+        <p class="italic">Tell us who they're for - we'll do the rest.</p>
+        <p class="lead">Same-day delivery across Glasgow on orders placed before 1pm. For weddings and events, leave a few details and we'll be in touch to arrange a studio consultation.</p>
         <div class="enq-detail">
           <div class="row">
             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 21s-7-5.2-7-11a7 7 0 1114 0c0 5.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
@@ -964,7 +968,7 @@ form{ display:grid; gap:1.7rem; }
           </div>
           <div class="row">
             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-            <div><div class="k">Open</div><div class="v">Mon&ndash;Sat 9&ndash;5:30 &middot; Sun 11&ndash;4</div></div>
+            <div><div class="k">Open</div><div class="v">Mon-Sat 9-5:30 | Sun 11-4</div></div>
           </div>
         </div>
       </div>
@@ -982,7 +986,7 @@ form{ display:grid; gap:1.7rem; }
               <option>The Byres Road Hand-Tie</option>
               <option>The Luxe Bloom</option>
               <option>Letterbox Flowers</option>
-              <option>Dried &amp; Preserved</option>
+              <option>Dried & Preserved</option>
               <option>Weekly Subscription</option>
               <option>Wedding / Event</option>
               <option>Sympathy / Funeral</option>
@@ -996,12 +1000,12 @@ form{ display:grid; gap:1.7rem; }
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
         <p class="form-note">We aim to reply within a couple of hours during shop hours.</p>
-        <div class="form-success" id="formSuccess">Thank you &mdash; your enquiry&rsquo;s landed on the bench. We&rsquo;ll be in touch shortly. 🌿</div>
+        <div class="form-success" id="formSuccess">Thank you - your enquiry's landed on the bench. We'll be in touch shortly.</div>
       </form>
     </div>
   </section>
 
-  <!-- ===== SECTION 11 — FIND US ===== -->
+  <!-- ===== SECTION 11 - FIND US ===== -->
   <section id="find" class="section">
     <div class="wrap">
       <div class="find-grid reveal">
@@ -1014,7 +1018,7 @@ form{ display:grid; gap:1.7rem; }
           </div>
           <div class="line">
             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-            <div><b>Opening Hours</b>Mon&ndash;Sat 9:00&ndash;5:30 &middot; Sun 11:00&ndash;4:00</div>
+            <div><b>Opening Hours</b>Mon-Sat 9:00-5:30 | Sun 11:00-4:00</div>
           </div>
           <div class="line">
             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 5c0 8.3 6.7 15 15 15v-3.5l-4-1.5-2 2a12 12 0 01-6-6l2-2L7.5 5z"/></svg>
@@ -1022,7 +1026,7 @@ form{ display:grid; gap:1.7rem; }
           </div>
           <div class="line">
             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12l5 5L20 7"/></svg>
-            <div><b>Getting here</b>One minute from Hillhead subway &mdash; just up from Òran Mór and the Botanic Gardens.</div>
+            <div><b>Getting here</b>One minute from Hillhead subway - just up from Oran Mor and the Botanic Gardens.</div>
           </div>
         </div>
         <div class="find-map" role="img" aria-label="Map showing Florist at 238 Byres Road, Glasgow">
@@ -1031,17 +1035,17 @@ form{ display:grid; gap:1.7rem; }
             <div class="pulse"></div>
             <div class="dot"></div>
           </div>
-          <div class="map-label">📍 <b>Florist</b> &middot; Byres Road</div>
+          <div class="map-label"><b>Florist</b> | Byres Road</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== SECTION 12 — FOOTER ===== -->
+  <!-- ===== SECTION 12 - FOOTER ===== -->
   <footer id="footer">
     <div class="wrap">
       <div class="foot-mark"><em>Florist</em></div>
-      <p class="foot-tag">Seasonal flowers, hand-tied in Glasgow&rsquo;s West End.</p>
+      <p class="foot-tag">Seasonal flowers, hand-tied in Glasgow's West End.</p>
       <div class="foot-social">
         <a href="#enquire">Instagram</a>
         <a href="#enquire">Pinterest</a>
@@ -1051,9 +1055,9 @@ form{ display:grid; gap:1.7rem; }
         <div>
           <h5>Hours</h5>
           <ul>
-            <li>Mon &ndash; Fri &nbsp; 9:00 &ndash; 5:30</li>
-            <li>Saturday &nbsp; 9:00 &ndash; 5:30</li>
-            <li>Sunday &nbsp; 11:00 &ndash; 4:00</li>
+            <li>Mon - Fri   9:00 - 5:30</li>
+            <li>Saturday   9:00 - 5:30</li>
+            <li>Sunday   11:00 - 4:00</li>
           </ul>
         </div>
         <div>
@@ -1075,7 +1079,7 @@ form{ display:grid; gap:1.7rem; }
           </ul>
         </div>
       </div>
-      <p class="copyright">&copy; 2012&ndash;2026 Florist &middot; Glasgow &middot; All Rights Reserved</p>
+      <p class="copyright">&copy; 2012-2026 Florist | Glasgow | All Rights Reserved</p>
     </div>
   </footer>
 
@@ -1083,9 +1087,9 @@ form{ display:grid; gap:1.7rem; }
 
 <script>
 /* ============================================================
-   BLUEBELL & BRIAR — interaction layer (vanilla JS only)
+   BLUEBELL & BRIAR - interaction layer (vanilla JS only)
    Note: the custom mouse-follower cursor is intentionally
-   omitted per request — every other animation is active.
+   omitted per request - every other animation is active.
    ============================================================ */
 (function(){
   "use strict";
@@ -1196,7 +1200,7 @@ form{ display:grid; gap:1.7rem; }
       io2.observe(aboutImg);
     }
   } else {
-    // Fallback: no IntersectionObserver — reveal everything up-front so no
+    // Fallback: no IntersectionObserver - reveal everything up-front so no
     // content can ever be stranded at opacity:0.
     document.querySelectorAll(revealSelector).forEach(function(el){
       el.classList.add("in");
@@ -1292,7 +1296,7 @@ form{ display:grid; gap:1.7rem; }
     e.preventDefault();
     if (!form.checkValidity()){ form.reportValidity(); return; }
     success.classList.add("show");
-    form.querySelector("#submitBtn").textContent = "Sent ✓";
+    form.querySelector("#submitBtn").textContent = "Sent";
     setTimeout(function(){ form.reset();
       form.querySelectorAll(".filled").forEach(function(n){ n.classList.remove("filled"); });
     }, 600);
